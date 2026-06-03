@@ -8,8 +8,10 @@
 </head>
 <body>
   <div class="app">
+    <!-- Sidebar: busca + listas -->
     <aside class="sidebar">
       <h1 class="logo">📋 Minhas Listas</h1>
+      <input id="busca" class="busca" type="search" placeholder="🔎 Buscar tarefas..." />
       <ul id="listas" class="listas"></ul>
       <form id="form-lista" class="form-lista">
         <input id="nova-lista" type="text" placeholder="Nova lista..." maxlength="40" />
@@ -17,6 +19,8 @@
         <button type="submit" title="Criar lista">+</button>
       </form>
     </aside>
+
+    <!-- Coluna central: tarefas -->
     <main class="conteudo">
       <header class="cabecalho">
         <div class="titulo-lista">
@@ -24,21 +28,42 @@
           <h2 id="titulo-lista">Selecione uma lista</h2>
         </div>
         <div class="acoes-lista" id="acoes-lista" hidden>
-          <label class="toggle">
-            <input type="checkbox" id="ocultar-concluidas" />
-            <span>Ocultar concluídas</span>
-          </label>
-          <button id="btn-excluir-lista" class="btn-perigo" title="Excluir lista">🗑 Excluir lista</button>
+          <label class="toggle"><input type="checkbox" id="ocultar-concluidas" /><span>Ocultar concluídas</span></label>
+          <button id="btn-excluir-lista" class="btn-perigo" title="Excluir lista">🗑</button>
         </div>
       </header>
       <form id="form-tarefa" class="form-tarefa" hidden>
         <input id="nova-tarefa" type="text" placeholder="O que precisa ser feito?" maxlength="120" />
-        <input id="nova-tarefa-etiqueta" type="text" placeholder="Etiqueta (opcional)" maxlength="20" />
+        <input id="nova-tarefa-etiqueta" type="text" placeholder="Etiqueta" maxlength="20" />
         <button type="submit">Adicionar</button>
       </form>
       <ul id="tarefas" class="tarefas"></ul>
       <p id="vazio" class="vazio">Crie uma lista para começar.</p>
     </main>
+
+    <!-- Painel de detalhe da tarefa -->
+    <aside class="detalhe" id="detalhe" hidden>
+      <div class="detalhe-topo">
+        <button id="btn-fechar" class="btn-icone" title="Fechar">✕</button>
+        <button id="btn-excluir-tarefa" class="btn-perigo" title="Excluir tarefa">🗑 Excluir</button>
+      </div>
+      <label class="campo-rotulo">Tarefa</label>
+      <input id="det-titulo" class="det-titulo" type="text" maxlength="120" />
+      <div class="det-linha">
+        <input id="det-etiqueta" class="det-etiqueta" type="text" placeholder="Etiqueta" maxlength="20" />
+        <label class="toggle"><input type="checkbox" id="det-status" /><span>Concluída</span></label>
+      </div>
+      <label class="campo-rotulo">Anotação</label>
+      <textarea id="det-anotacao" class="det-anotacao" placeholder="Escreva detalhes, ideias, links..."></textarea>
+      <label class="campo-rotulo">Checklist</label>
+      <ul id="det-checklist" class="det-checklist"></ul>
+      <form id="form-item" class="form-item">
+        <input id="novo-item" type="text" placeholder="Adicionar item..." maxlength="80" />
+        <button type="submit" title="Adicionar item">+</button>
+      </form>
+      <button id="btn-salvar" class="btn-salvar">Salvar alterações</button>
+      <span id="aviso-salvo" class="aviso-salvo" hidden>✓ Salvo</span>
+    </aside>
   </div>
   <script src="/js/app.js"></script>
 </body>

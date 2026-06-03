@@ -5,9 +5,6 @@ module.exports = function auth(req, res, next) {
   if (!token) return res.status(401).json({ erro: 'Token não fornecido.' });
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.usuarioId = payload.id;
-    next();
-  } catch (err) {
-    return res.status(401).json({ erro: 'Token inválido ou expirado.' });
-  }
+    req.usuarioId = payload.id; next();
+  } catch (err) { return res.status(401).json({ erro: 'Token inválido ou expirado.' }); }
 };

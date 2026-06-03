@@ -1,7 +1,7 @@
 {
   "name": "crud-de-listas",
-  "version": "0.1.0",
-  "description": "Protótipo web para gerenciamento de listas de tarefas (CRUD), com etiquetas, conclusão e ocultação de tarefas.",
+  "version": "0.2.0",
+  "description": "Protótipo web para gerenciamento de listas de tarefas com anotações e checklists.",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

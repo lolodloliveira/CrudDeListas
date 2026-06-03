@@ -1,36 +1,34 @@
 # CRUD de Listas
 
-Aplicação web para **gerenciamento de listas de tarefas**: criar listas, organizar tarefas por etiquetas e cores, marcar itens como concluídos, ocultar finalizados e acompanhar o progresso.
+Aplicação web para **organização e gestão de tarefas**, voltada a estudantes e pequenos times que precisam de agilidade e centralização. Permite o gerenciamento completo de listas de tarefas (criar, ler, atualizar e excluir), com **anotações** e **checklists** por tarefa — no espírito do app de Notas do iPhone.
 
-> 🚧 **Status: protótipo funcional.** Esta versão roda sem banco de dados externo (armazenamento em arquivo JSON) para facilitar a demonstração. Os models Mongoose para a versão final já estão no repositório em [`src/models`](./src/models).
+> 🚧 **Status: protótipo funcional.** Roda sem banco de dados externo (armazenamento em arquivo JSON). Os models Mongoose para a versão final estão em [`src/models`](./src/models).
 
 ---
 
-## ▶️ Como rodar o protótipo (sem instalar banco)
+## ▶️ Como rodar (sem instalar banco)
 
-Pré-requisito: ter o [Node.js](https://nodejs.org/) 18+ instalado.
+Pré-requisito: [Node.js](https://nodejs.org/) 18+.
 
 ```bash
 npm install
 npm start
 ```
 
-Depois abra **http://localhost:3000** no navegador. Os dados ficam em `data/db.json` (criado automaticamente, já com exemplos para a apresentação).
+Abra **http://localhost:3000**. Os dados ficam em `data/db.json` (criado automaticamente, já com exemplos).
 
 ---
 
-## 📋 Escopo e casos de uso
+## ✨ O que dá para fazer
 
-- **UC01 – Manter listas (CRUD):** criar, visualizar, editar e excluir listas.
-- **UC02 – Categorizar por cor/etiqueta:** cor por lista e etiqueta por tarefa.
-- **UC03 – Marcar como concluída:** alternar status pendente/concluída.
-- **UC04 – Ocultar concluídas:** filtro que mostra só as tarefas pendentes.
-- **UC05 – Editar detalhes da tarefa:** alterar descrição, etiqueta e status.
-- **UC06 – Checklists:** (planejado para a próxima etapa).
-
-### O que já funciona neste protótipo
-
-Criar/excluir listas com cor, adicionar tarefas com etiqueta, marcar/desmarcar como concluída, ocultar concluídas e excluir tarefas — tudo persistido em arquivo. Autenticação de usuário fica para a versão final.
+- **Listas coloridas** na lateral — criar, escolher cor, excluir (UC01/UC02).
+- **Tarefas** dentro de cada lista — adicionar, marcar como concluída, excluir (UC01/UC03).
+- **Ocultar concluídas** com um clique (UC04).
+- **Painel de detalhe** ao clicar numa tarefa, com:
+  - **Anotação** livre (texto), salva com o botão "Salvar" (UC05).
+  - **Checklist** de subitens, marcar/desmarcar e remover (UC06).
+  - Editar título, etiqueta e status.
+- **Busca** por tarefas em todas as listas (título, etiqueta, anotação e itens do checklist).
 
 ---
 
@@ -43,23 +41,21 @@ Criar/excluir listas com cor, adicionar tarefas com etiqueta, marcar/desmarcar c
 
 ---
 
-## 📂 Estrutura de diretórios
+## 📂 Estrutura
 
 ```
 crud-de-listas/
-├── public/                  # Frontend (servido estaticamente)
+├── public/                  # Frontend
 │   ├── index.html
 │   ├── css/style.css
 │   └── js/app.js
 ├── src/
 │   ├── store.js             # Armazenamento JSON (protótipo)
-│   ├── controllers/         # Regras dos casos de uso (UC01–UC05)
+│   ├── controllers/         # listaController, tarefaController (UC01–UC06)
 │   ├── routes/              # Endpoints da API
 │   ├── models/              # Schemas Mongoose (versão final)
-│   ├── config/              # Conexão MongoDB (versão final)
-│   ├── middlewares/         # Autenticação (versão final)
-│   ├── app.js               # Configuração do Express
-│   └── server.js            # Ponto de entrada
+│   ├── config/ middlewares/ # Conexão Mongo e autenticação (versão final)
+│   ├── app.js  server.js
 ├── data/                    # db.json (gerado em runtime, ignorado pelo Git)
 ├── package.json
 └── README.md
@@ -69,25 +65,27 @@ crud-de-listas/
 
 ## 🔌 Endpoints da API
 
-| Método | Rota                                         | Caso de uso |
-|--------|----------------------------------------------|-------------|
-| GET    | `/api/listas`                                | UC01 |
-| POST   | `/api/listas`                                | UC01 |
-| PUT    | `/api/listas/:id`                            | UC01/UC02 |
-| DELETE | `/api/listas/:id`                            | UC01 |
-| POST   | `/api/listas/:id/tarefas`                    | UC01 |
-| PUT    | `/api/listas/:id/tarefas/:tid`               | UC05 |
-| PATCH  | `/api/listas/:id/tarefas/:tid/status`        | UC03 |
-| DELETE | `/api/listas/:id/tarefas/:tid`               | UC01 |
+| Método | Rota | Caso de uso |
+|--------|------|-------------|
+| GET/POST | `/api/listas` | UC01 |
+| PUT/DELETE | `/api/listas/:id` | UC01/UC02 |
+| POST | `/api/listas/:id/tarefas` | UC01 |
+| PUT | `/api/listas/:id/tarefas/:tid` | UC05 (descrição, etiqueta, status, anotação) |
+| PATCH | `/api/listas/:id/tarefas/:tid/status` | UC03 |
+| DELETE | `/api/listas/:id/tarefas/:tid` | UC01 |
+| POST | `/api/listas/:id/tarefas/:tid/checklist` | UC06 |
+| PATCH | `/api/listas/:id/tarefas/:tid/checklist/:itemId` | UC06 |
+| DELETE | `/api/listas/:id/tarefas/:tid/checklist/:itemId` | UC06 |
 
 ---
 
 ## 🗺️ Próximos passos
 
-- [x] Protótipo funcional (UC01–UC05) com armazenamento em arquivo
-- [ ] Checklists nas tarefas (UC06)
+- [x] CRUD de listas e tarefas (UC01–UC05)
+- [x] Anotações e checklists por tarefa (UC06)
+- [x] Busca de tarefas
 - [ ] Autenticação de usuários
-- [ ] Migrar armazenamento para MongoDB (Mongoose)
+- [ ] Migrar armazenamento para MongoDB
 - [ ] Testes automatizados e deploy
 
 ---
