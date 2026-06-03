@@ -9,6 +9,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "express": "^4.22.2"
+    "axios": "^1.17.0",
+    "cors": "^2.8.6",
+    "express": "^4.22.2",
+    "react-router-dom": "^7.16.0"
   }
 }
