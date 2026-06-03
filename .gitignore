@@ -26,6 +26,7 @@ logs/
 *.sqlite
 *.sqlite3
 data/db/
+data/db.json
 mongo-data/
 
 # ---- Editores / SO ----

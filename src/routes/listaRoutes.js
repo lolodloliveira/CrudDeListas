@@ -1,14 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middlewares/auth');
 const listaController = require('../controllers/listaController');
-
-// Todas as rotas de lista exigem usuário autenticado
-router.use(auth);
-
-router.get('/', listaController.listar);       // UC01
-router.post('/', listaController.criar);       // UC01
-router.put('/:id', listaController.atualizar); // UC01 / UC02
-router.delete('/:id', listaController.excluir);// UC01
-
+const tarefaController = require('../controllers/tarefaController');
+router.get('/', listaController.listar);
+router.post('/', listaController.criar);
+router.put('/:id', listaController.atualizar);
+router.delete('/:id', listaController.excluir);
+router.post('/:listaId/tarefas', tarefaController.criar);
+router.put('/:listaId/tarefas/:tarefaId', tarefaController.atualizar);
+router.patch('/:listaId/tarefas/:tarefaId/status', tarefaController.alternarStatus);
+router.delete('/:listaId/tarefas/:tarefaId', tarefaController.excluir);
 module.exports = router;

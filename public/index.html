@@ -7,12 +7,39 @@
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-  <header>
-    <h1>CRUD de Listas</h1>
-  </header>
-  <main>
-    <p>Interface web em construção.</p>
-  </main>
+  <div class="app">
+    <aside class="sidebar">
+      <h1 class="logo">📋 Minhas Listas</h1>
+      <ul id="listas" class="listas"></ul>
+      <form id="form-lista" class="form-lista">
+        <input id="nova-lista" type="text" placeholder="Nova lista..." maxlength="40" />
+        <input id="nova-lista-cor" type="color" value="#4F86C6" title="Cor da lista" />
+        <button type="submit" title="Criar lista">+</button>
+      </form>
+    </aside>
+    <main class="conteudo">
+      <header class="cabecalho">
+        <div class="titulo-lista">
+          <span id="ponto-cor" class="ponto-cor"></span>
+          <h2 id="titulo-lista">Selecione uma lista</h2>
+        </div>
+        <div class="acoes-lista" id="acoes-lista" hidden>
+          <label class="toggle">
+            <input type="checkbox" id="ocultar-concluidas" />
+            <span>Ocultar concluídas</span>
+          </label>
+          <button id="btn-excluir-lista" class="btn-perigo" title="Excluir lista">🗑 Excluir lista</button>
+        </div>
+      </header>
+      <form id="form-tarefa" class="form-tarefa" hidden>
+        <input id="nova-tarefa" type="text" placeholder="O que precisa ser feito?" maxlength="120" />
+        <input id="nova-tarefa-etiqueta" type="text" placeholder="Etiqueta (opcional)" maxlength="20" />
+        <button type="submit">Adicionar</button>
+      </form>
+      <ul id="tarefas" class="tarefas"></ul>
+      <p id="vazio" class="vazio">Crie uma lista para começar.</p>
+    </main>
+  </div>
   <script src="/js/app.js"></script>
 </body>
 </html>

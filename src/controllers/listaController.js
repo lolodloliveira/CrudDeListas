@@ -1,31 +1,25 @@
-const Lista = require('../models/Lista');
-
-// UC01 – Manter Listas (CRUD)
-// Exemplo de esqueleto. Ajuste a regra de negócio conforme necessário.
-
-exports.listar = async (req, res) => {
-  const listas = await Lista.find({ usuario: req.usuarioId });
-  res.json(listas);
-};
-
-exports.criar = async (req, res) => {
+const store = require('../store');
+exports.listar = (req, res) => res.json(store.read().listas);
+exports.criar = (req, res) => {
   const { titulo, cor_hex } = req.body;
-  const lista = await Lista.create({ titulo, cor_hex, usuario: req.usuarioId });
-  res.status(201).json(lista);
+  if (!titulo || !titulo.trim()) return res.status(400).json({ erro: 'O título da lista é obrigatório.' });
+  const db = store.read();
+  const lista = { id: store.novoId('l'), titulo: titulo.trim(), cor_hex: cor_hex || '#4F86C6', criadaEm: new Date().toISOString(), tarefas: [] };
+  db.listas.push(lista); store.write(db); res.status(201).json(lista);
 };
-
-exports.atualizar = async (req, res) => {
-  const lista = await Lista.findOneAndUpdate(
-    { _id: req.params.id, usuario: req.usuarioId },
-    req.body,
-    { new: true }
-  );
+exports.atualizar = (req, res) => {
+  const db = store.read();
+  const lista = db.listas.find((l) => l.id === req.params.id);
   if (!lista) return res.status(404).json({ erro: 'Lista não encontrada.' });
-  res.json(lista);
+  const { titulo, cor_hex } = req.body;
+  if (titulo !== undefined) lista.titulo = titulo.trim();
+  if (cor_hex !== undefined) lista.cor_hex = cor_hex;
+  store.write(db); res.json(lista);
 };
-
-exports.excluir = async (req, res) => {
-  const lista = await Lista.findOneAndDelete({ _id: req.params.id, usuario: req.usuarioId });
-  if (!lista) return res.status(404).json({ erro: 'Lista não encontrada.' });
-  res.status(204).end();
+exports.excluir = (req, res) => {
+  const db = store.read();
+  const antes = db.listas.length;
+  db.listas = db.listas.filter((l) => l.id !== req.params.id);
+  if (db.listas.length === antes) return res.status(404).json({ erro: 'Lista não encontrada.' });
+  store.write(db); res.status(204).end();
 };
