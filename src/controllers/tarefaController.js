@@ -12,21 +12,22 @@ function ctx(req, res) {
   return { db, lista };
 }
 
-// --- Tarefas ---
 exports.criar = (req, res) => {
   const c = ctx(req, res); if (!c) return;
-  const { descricao, etiqueta } = req.body;
+  const { descricao, etiqueta, prazo } = req.body;
   if (!descricao || !descricao.trim()) return res.status(400).json({ erro: 'A descrição da tarefa é obrigatória.' });
-  const tarefa = { id: store.novoId('t'), descricao: descricao.trim(), etiqueta: (etiqueta||'').trim(), status: 'pendente', anotacao: '', checklist: [], criadaEm: new Date().toISOString() };
+  const tarefa = { id: store.novoId('t'), descricao: descricao.trim(), etiqueta: (etiqueta||'').trim(), status: 'pendente', prazo: prazo || null, fixada: false, anotacao: '', checklist: [], criadaEm: new Date().toISOString() };
   c.lista.tarefas.push(tarefa); store.write(c.db); res.status(201).json(tarefa);
 };
 exports.atualizar = (req, res) => {
   const c = ctx(req, res); if (!c) return;
-  const { descricao, etiqueta, status, anotacao } = req.body;
+  const { descricao, etiqueta, status, anotacao, prazo, fixada } = req.body;
   if (descricao !== undefined) c.tarefa.descricao = descricao.trim();
   if (etiqueta !== undefined) c.tarefa.etiqueta = etiqueta.trim();
   if (status !== undefined) c.tarefa.status = status;
   if (anotacao !== undefined) c.tarefa.anotacao = anotacao;
+  if (prazo !== undefined) c.tarefa.prazo = prazo || null;
+  if (fixada !== undefined) c.tarefa.fixada = !!fixada;
   store.write(c.db); res.json(c.tarefa);
 };
 exports.alternarStatus = (req, res) => {
@@ -34,10 +35,23 @@ exports.alternarStatus = (req, res) => {
   c.tarefa.status = c.tarefa.status === 'concluida' ? 'pendente' : 'concluida';
   store.write(c.db); res.json(c.tarefa);
 };
+exports.fixar = (req, res) => {
+  const c = ctx(req, res); if (!c) return;
+  c.tarefa.fixada = !c.tarefa.fixada;
+  store.write(c.db); res.json(c.tarefa);
+};
 exports.excluir = (req, res) => {
   const c = ctx(req, res); if (!c) return;
   c.lista.tarefas = c.lista.tarefas.filter((t) => t.id !== req.params.tarefaId);
   store.write(c.db); res.status(204).end();
+};
+// Reordenar tarefas dentro da lista (drag-and-drop)
+exports.reordenar = (req, res) => {
+  const c = ctx(req, res); if (!c) return;
+  const ordem = req.body.ordem || [];
+  const pos = (id) => { const i = ordem.indexOf(id); return i === -1 ? Infinity : i; };
+  c.lista.tarefas.sort((a, b) => pos(a.id) - pos(b.id));
+  store.write(c.db); res.json(c.lista.tarefas);
 };
 
 // --- Checklist (UC06) ---

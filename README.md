@@ -1,6 +1,6 @@
 # CRUD de Listas
 
-Aplicação web para **organização e gestão de tarefas**, voltada a estudantes e pequenos times que precisam de agilidade e centralização. Permite o gerenciamento completo de listas de tarefas (criar, ler, atualizar e excluir), com **anotações** e **checklists** por tarefa — no espírito do app de Notas do iPhone.
+Aplicação web para **organização e gestão de tarefas**, voltada a estudantes e pequenos times que precisam de agilidade e centralização. Inspirada no app de Notas do iPhone: listas, tarefas, **anotações**, **checklists**, **prazos** e **prioridade visual** — com interface fluida e modo claro/escuro.
 
 > 🚧 **Status: protótipo funcional.** Roda sem banco de dados externo (armazenamento em arquivo JSON). Os models Mongoose para a versão final estão em [`src/models`](./src/models).
 
@@ -19,16 +19,16 @@ Abra **http://localhost:3000**. Os dados ficam em `data/db.json` (criado automat
 
 ---
 
-## ✨ O que dá para fazer
+## ✨ Funcionalidades
 
-- **Listas coloridas** na lateral — criar, escolher cor, excluir (UC01/UC02).
-- **Tarefas** dentro de cada lista — adicionar, marcar como concluída, excluir (UC01/UC03).
-- **Ocultar concluídas** com um clique (UC04).
-- **Painel de detalhe** ao clicar numa tarefa, com:
-  - **Anotação** livre (texto), salva com o botão "Salvar" (UC05).
-  - **Checklist** de subitens, marcar/desmarcar e remover (UC06).
-  - Editar título, etiqueta e status.
-- **Busca** por tarefas em todas as listas (título, etiqueta, anotação e itens do checklist).
+- **Listas coloridas** na lateral — criar, escolher cor, excluir e **reordenar arrastando** (UC01/UC02).
+- **Tarefas** — adicionar, concluir, excluir, **arrastar para reordenar**, **fixar no topo** (📌).
+- **Prazos** — data por tarefa, com **atrasadas em vermelho** e **vence hoje** em destaque.
+- **Ordenar** por manual, prazo, nome ou status; **filtrar** por etiqueta e ocultar concluídas.
+- **Busca** por tarefas em todas as listas (título, etiqueta, anotação, itens).
+- **Painel de detalhe** ao clicar numa tarefa: anotação livre, checklist (UC06), etiqueta, prazo e status.
+- **Painel de progresso** com barra de % concluído por lista.
+- **Modo claro/escuro** e animações suaves.
 
 ---
 
@@ -37,7 +37,7 @@ Abra **http://localhost:3000**. Os dados ficam em `data/db.json` (criado automat
 - **Backend:** Node.js + Express
 - **Armazenamento (protótipo):** arquivo JSON (`data/db.json`)
 - **Banco (versão final):** MongoDB + Mongoose (scaffolding em `src/models` e `src/config`)
-- **Frontend:** HTML, CSS e JavaScript puro
+- **Frontend:** HTML, CSS e JavaScript puro (sem frameworks)
 
 ---
 
@@ -53,8 +53,7 @@ crud-de-listas/
 │   ├── store.js             # Armazenamento JSON (protótipo)
 │   ├── controllers/         # listaController, tarefaController (UC01–UC06)
 │   ├── routes/              # Endpoints da API
-│   ├── models/              # Schemas Mongoose (versão final)
-│   ├── config/ middlewares/ # Conexão Mongo e autenticação (versão final)
+│   ├── models/ config/ middlewares/   # Versão final (Mongoose, auth)
 │   ├── app.js  server.js
 ├── data/                    # db.json (gerado em runtime, ignorado pelo Git)
 ├── package.json
@@ -63,27 +62,28 @@ crud-de-listas/
 
 ---
 
-## 🔌 Endpoints da API
+## 🔌 Principais endpoints
 
-| Método | Rota | Caso de uso |
-|--------|------|-------------|
-| GET/POST | `/api/listas` | UC01 |
-| PUT/DELETE | `/api/listas/:id` | UC01/UC02 |
-| POST | `/api/listas/:id/tarefas` | UC01 |
-| PUT | `/api/listas/:id/tarefas/:tid` | UC05 (descrição, etiqueta, status, anotação) |
-| PATCH | `/api/listas/:id/tarefas/:tid/status` | UC03 |
-| DELETE | `/api/listas/:id/tarefas/:tid` | UC01 |
-| POST | `/api/listas/:id/tarefas/:tid/checklist` | UC06 |
-| PATCH | `/api/listas/:id/tarefas/:tid/checklist/:itemId` | UC06 |
-| DELETE | `/api/listas/:id/tarefas/:tid/checklist/:itemId` | UC06 |
+| Método | Rota | Função |
+|--------|------|--------|
+| GET/POST | `/api/listas` | Listar / criar lista |
+| PUT/DELETE | `/api/listas/:id` | Editar / excluir lista |
+| PATCH | `/api/listas/reordenar` | Reordenar listas |
+| POST | `/api/listas/:id/tarefas` | Criar tarefa |
+| PUT | `/api/listas/:id/tarefas/:tid` | Editar (descrição, etiqueta, status, prazo, anotação) |
+| PATCH | `/api/listas/:id/tarefas/:tid/status` | Concluir / reabrir |
+| PATCH | `/api/listas/:id/tarefas/:tid/fixar` | Fixar / desafixar |
+| PATCH | `/api/listas/:id/tarefas/reordenar` | Reordenar tarefas |
+| DELETE | `/api/listas/:id/tarefas/:tid` | Excluir tarefa |
+| POST/PATCH/DELETE | `/api/listas/:id/tarefas/:tid/checklist/...` | Itens do checklist (UC06) |
 
 ---
 
 ## 🗺️ Próximos passos
 
-- [x] CRUD de listas e tarefas (UC01–UC05)
-- [x] Anotações e checklists por tarefa (UC06)
-- [x] Busca de tarefas
+- [x] CRUD de listas e tarefas, anotações e checklists (UC01–UC06)
+- [x] Prazos, ordenação, filtros, busca, fixar e reordenar
+- [x] Modo claro/escuro e interface fluida
 - [ ] Autenticação de usuários
 - [ ] Migrar armazenamento para MongoDB
 - [ ] Testes automatizados e deploy

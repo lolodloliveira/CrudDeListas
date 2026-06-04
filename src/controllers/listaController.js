@@ -23,3 +23,11 @@ exports.excluir = (req, res) => {
   if (db.listas.length === antes) return res.status(404).json({ erro: 'Lista não encontrada.' });
   store.write(db); res.status(204).end();
 };
+// Reordenar listas (drag-and-drop)
+exports.reordenar = (req, res) => {
+  const ordem = req.body.ordem || [];
+  const db = store.read();
+  const pos = (id) => { const i = ordem.indexOf(id); return i === -1 ? Infinity : i; };
+  db.listas.sort((a, b) => pos(a.id) - pos(b.id));
+  store.write(db); res.json(db.listas);
+};
