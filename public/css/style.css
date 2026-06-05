@@ -89,7 +89,6 @@ svg { flex-shrink:0; }
 .item-tarefa.fixada { border-left:3px solid var(--warn); }
 .tarefa-row { display:flex; align-items:center; gap:13px; padding:13px 15px; cursor:pointer; }
 .tarefa-row:hover { background:var(--surface-2); }
-.item-tarefa input.chk-status { width:19px; height:19px; cursor:pointer; flex-shrink:0; accent-color:var(--accent); }
 .item-tarefa .corpo { flex:1; min-width:0; }
 .item-tarefa .descricao { display:flex; align-items:center; gap:6px; font-size:15px; }
 .item-tarefa.concluida .descricao { text-decoration:line-through; color:var(--muted); }
@@ -111,7 +110,6 @@ svg { flex-shrink:0; }
 .tarefa-exp { border-top:1px solid var(--border); padding:10px 15px 13px 47px; background:var(--surface-2); animation:expandir .2s ease; }
 .exp-checklist { list-style:none; }
 .exp-item { display:flex; align-items:center; gap:10px; padding:6px 0; animation:surge .18s ease; }
-.exp-item input[type=checkbox] { width:16px; height:16px; cursor:pointer; accent-color:var(--accent); }
 .exp-item .txt { flex:1; font-size:14px; }
 .exp-item.feito .txt { text-decoration:line-through; color:var(--muted); }
 .exp-vazio { font-size:13px; color:var(--muted); padding:4px 0 8px; }
@@ -168,3 +166,31 @@ svg { flex-shrink:0; }
 .btn-pri:hover{ filter:brightness(1.08); }
 @keyframes fade{ from{opacity:0} to{opacity:1} }
 @keyframes pop{ from{opacity:0; transform:scale(.95)} to{opacity:1; transform:scale(1)} }
+
+/* ===== Checkboxes redondos (estilo tarefas) ===== */
+.chk-status,
+.exp-item input[type=checkbox],
+.toggle input[type=checkbox],
+#det-status {
+  appearance:none; -webkit-appearance:none; margin:0;
+  border-radius:50%; border:2px solid var(--border); background:var(--surface);
+  cursor:pointer; flex-shrink:0; display:inline-block; vertical-align:middle;
+  transition:background .15s, border-color .15s, transform .1s;
+}
+.chk-status:hover,
+.exp-item input[type=checkbox]:hover,
+.toggle input[type=checkbox]:hover,
+#det-status:hover { border-color:var(--accent); }
+.chk-status:checked,
+.exp-item input[type=checkbox]:checked,
+.toggle input[type=checkbox]:checked,
+#det-status:checked {
+  border-color:var(--accent);
+  background:var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 62% no-repeat;
+}
+.chk-status:active,
+.exp-item input[type=checkbox]:active,
+#det-status:active { transform:scale(.9); }
+.chk-status { width:22px; height:22px; }
+.exp-item input[type=checkbox] { width:18px; height:18px; }
+.toggle input[type=checkbox], #det-status { width:18px; height:18px; }
