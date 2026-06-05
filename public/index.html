@@ -11,15 +11,18 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="topo-side">
-        <h1 class="logo">📋 Listas</h1>
-        <button id="btn-tema" class="btn-tema" title="Alternar tema">🌙</button>
+        <h1 class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6M9 16h4"/></svg> Listas</h1>
+        <button id="btn-tema" class="btn-tema" title="Alternar tema" aria-label="Alternar tema"></button>
       </div>
-      <input id="busca" class="busca" type="search" placeholder="Buscar tarefas..." />
+      <div class="busca-wrap">
+        <svg class="busca-ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="busca" class="busca" type="search" placeholder="Buscar tarefas..." />
+      </div>
       <ul id="listas" class="listas"></ul>
       <form id="form-lista" class="form-lista">
         <input id="nova-lista" type="text" placeholder="Nova lista..." maxlength="40" />
-        <input id="nova-lista-cor" type="color" value="#4F86C6" title="Cor da lista" />
-        <button type="submit" title="Criar lista">+</button>
+        <input id="nova-lista-cor" type="color" value="#4F86C6" title="Cor da lista" aria-label="Cor da lista" />
+        <button type="submit" title="Criar lista" aria-label="Criar lista"></button>
       </form>
     </aside>
 
@@ -30,18 +33,10 @@
           <span id="ponto-cor" class="ponto-cor"></span>
           <h2 id="titulo-lista">Selecione uma lista</h2>
         </div>
-        <button id="btn-excluir-lista" class="btn-perigo" title="Excluir lista" hidden>🗑</button>
+        <button id="btn-excluir-lista" class="btn-perigo" title="Excluir lista" aria-label="Excluir lista" hidden></button>
       </header>
 
       <div id="barra-ferramentas" class="ferramentas" hidden>
-        <label class="campo-inline">Ordenar
-          <select id="ordenar">
-            <option value="manual">Manual</option>
-            <option value="prazo">Prazo</option>
-            <option value="nome">Nome</option>
-            <option value="status">Status</option>
-          </select>
-        </label>
         <label class="campo-inline">Etiqueta
           <select id="filtro-etiqueta"><option value="">Todas</option></select>
         </label>
@@ -66,10 +61,10 @@
     <!-- Detalhe -->
     <aside class="detalhe" id="detalhe" hidden>
       <div class="detalhe-topo">
-        <button id="btn-fechar" class="btn-icone" title="Fechar">✕</button>
+        <button id="btn-fechar" class="btn-icone" title="Fechar" aria-label="Fechar"></button>
         <div class="detalhe-topo-dir">
-          <button id="btn-fixar" class="btn-icone" title="Fixar no topo">📌</button>
-          <button id="btn-excluir-tarefa" class="btn-perigo" title="Excluir tarefa">🗑 Excluir</button>
+          <button id="btn-fixar" class="btn-icone" title="Fixar no topo" aria-label="Fixar"></button>
+          <button id="btn-excluir-tarefa" class="btn-perigo" title="Excluir tarefa"></button>
         </div>
       </div>
       <label class="campo-rotulo">Tarefa</label>
@@ -82,12 +77,6 @@
       <input id="det-prazo" class="det-prazo" type="date" />
       <label class="campo-rotulo">Anotação</label>
       <textarea id="det-anotacao" class="det-anotacao" placeholder="Escreva detalhes, ideias, links..."></textarea>
-      <label class="campo-rotulo">Checklist</label>
-      <ul id="det-checklist" class="det-checklist"></ul>
-      <form id="form-item" class="form-item">
-        <input id="novo-item" type="text" placeholder="Adicionar item..." maxlength="80" />
-        <button type="submit" title="Adicionar item">+</button>
-      </form>
       <button id="btn-salvar" class="btn-salvar">Salvar alterações</button>
     </aside>
   </div>

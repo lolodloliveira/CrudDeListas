@@ -24,9 +24,10 @@ Abra **http://localhost:3000**. Os dados ficam em `data/db.json` (criado automat
 - **Listas coloridas** na lateral — criar, escolher cor, excluir e **reordenar arrastando** (UC01/UC02).
 - **Tarefas** — adicionar, concluir, excluir, **arrastar para reordenar**, **fixar no topo** (📌).
 - **Prazos** — data por tarefa, com **atrasadas em vermelho** e **vence hoje** em destaque.
-- **Ordenar** por manual, prazo, nome ou status; **filtrar** por etiqueta e ocultar concluídas.
+- **Filtrar** por etiqueta e ocultar concluídas; **arrastar para reordenar**.
 - **Busca** por tarefas em todas as listas (título, etiqueta, anotação, itens).
-- **Painel de detalhe** ao clicar numa tarefa: anotação livre, checklist (UC06), etiqueta, prazo e status.
+- **Checklist que expande inline** ao clicar na tarefa (UC06).
+- **Painel de detalhes** (ícone de edição) para anotação, etiqueta, prazo e status.
 - **Painel de progresso** com barra de % concluído por lista.
 - **Modo claro/escuro** e animações suaves.
 
