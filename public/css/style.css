@@ -194,3 +194,18 @@ svg { flex-shrink:0; }
 .chk-status { width:22px; height:22px; }
 .exp-item input[type=checkbox] { width:18px; height:18px; }
 .toggle input[type=checkbox], #det-status { width:18px; height:18px; }
+
+/* ===== Editor de notas (anotação formatada) ===== */
+.editor-toolbar { display:flex; flex-wrap:wrap; gap:3px; align-items:center; padding:6px 7px; background:var(--surface-2); border:1px solid var(--border); border-bottom:none; border-radius:var(--radius-sm) var(--radius-sm) 0 0; }
+.editor-toolbar button { border:1px solid transparent; background:none; color:var(--text); padding:4px 9px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:500; display:inline-flex; align-items:center; transition:background .12s; }
+.editor-toolbar button:hover { background:var(--surface); }
+.editor-toolbar button.bold { font-weight:700; }
+.editor-toolbar button.ital { font-style:italic; }
+.editor-toolbar .sep { width:1px; height:18px; background:var(--border); margin:0 4px; }
+.det-anotacao.editor { min-height:140px; border-radius:0 0 var(--radius-sm) var(--radius-sm); overflow-y:auto; resize:none; }
+.det-anotacao.editor:empty:before { content:attr(data-placeholder); color:var(--muted); }
+.det-anotacao.editor h1 { font-size:20px; font-weight:700; line-height:1.3; margin:6px 0; }
+.det-anotacao.editor h2 { font-size:16px; font-weight:600; line-height:1.3; margin:5px 0; color:var(--text); }
+.det-anotacao.editor p { margin:4px 0; }
+.det-anotacao.editor ul { margin:4px 0 4px 20px; }
+.det-anotacao.editor:focus { border-color:var(--accent); }

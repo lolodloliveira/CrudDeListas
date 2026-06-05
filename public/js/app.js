@@ -42,6 +42,7 @@ const api = {
 // ===== Util =====
 const $ = (id) => document.getElementById(id);
 const esc = (t) => { const d = document.createElement('div'); d.textContent = t ?? ''; return d.innerHTML; };
+const txtPlano = (html) => { const d = document.createElement('div'); d.innerHTML = html || ''; return d.textContent || ''; };
 const getLista = (id) => dados.find(l => l.id === id);
 const listaDaTarefa = (tid) => dados.find(l => l.tarefas.some(t => t.id === tid));
 const getTarefa = (tid) => { const l = listaDaTarefa(tid); return l && l.tarefas.find(t => t.id === tid); };
@@ -150,7 +151,7 @@ function renderBusca(ul, vazio) {
   $('ponto-cor').style.background = 'var(--border)';
   const termo = termoBusca.toLowerCase(); const achados = [];
   dados.forEach(l => l.tarefas.forEach(t => {
-    const alvo = [t.descricao, t.etiqueta, t.anotacao, ...(t.checklist || []).map(i => i.texto)].join(' ').toLowerCase();
+    const alvo = [t.descricao, t.etiqueta, txtPlano(t.anotacao), ...(t.checklist || []).map(i => i.texto)].join(' ').toLowerCase();
     if (alvo.includes(termo)) achados.push({ tarefa: t, lista: l });
   }));
   if (!achados.length) { vazio.hidden = false; vazio.textContent = 'Nenhuma tarefa encontrada.'; return; }
@@ -171,7 +172,7 @@ function itemTarefa(t, comOrigem, listaOrigem, arrastavel) {
   const pz = formatarPrazo(t.prazo, t.status);
   const prazoHtml = pz ? `<span class="prazo ${pz.classe}">${ic('calendar', 12)} ${esc(pz.texto)}</span>` : '';
   const checagem = total ? `<span class="mi">${ic('listcheck', 13)} ${feitos}/${total}</span>` : '';
-  const nota = t.anotacao && t.anotacao.trim() ? `<span class="mi">${ic('note', 13)}</span>` : '';
+  const nota = txtPlano(t.anotacao).trim() ? `<span class="mi">${ic('note', 13)}</span>` : '';
   li.innerHTML = `
     <div class="tarefa-row">
       <input type="checkbox" class="chk-status" ${t.status === 'concluida' ? 'checked' : ''} />
@@ -280,7 +281,7 @@ function abrirDetalhe(tid) {
   $('det-etiqueta').value = t.etiqueta || '';
   $('det-status').checked = t.status === 'concluida';
   $('det-prazo').value = t.prazo || '';
-  $('det-anotacao').value = t.anotacao || '';
+  $('det-anotacao').innerHTML = t.anotacao || '';
   $('btn-fixar').classList.toggle('btn-fixar-on', !!t.fixada);
   $('detalhe').hidden = false;
   document.querySelector('.app').classList.add('com-detalhe');
@@ -366,7 +367,7 @@ $('btn-salvar').onclick = async () => {
     etiqueta: $('det-etiqueta').value,
     status: $('det-status').checked ? 'concluida' : 'pendente',
     prazo: $('det-prazo').value || null,
-    anotacao: $('det-anotacao').value,
+    anotacao: $('det-anotacao').innerHTML,
   };
   const at = await api.salvarTarefa(lid, t.id, body); Object.assign(t, at);
   renderTarefas(); renderListas(); toast('Alterações salvas', 'sucesso');
@@ -403,6 +404,20 @@ function elementoApos(ul, y, sel) {
     return c;
   }, { offset: Number.NEGATIVE_INFINITY }).element || null;
 }
+
+// ===== Editor de notas (formatação) =====
+(function ligarEditor() {
+  const tb = $('editor-toolbar'), ed = $('det-anotacao');
+  if (!tb || !ed) return;
+  tb.addEventListener('mousedown', (e) => e.preventDefault()); // mantém a seleção no editor
+  tb.querySelectorAll('button').forEach(btn => {
+    btn.onclick = () => {
+      ed.focus();
+      if (btn.dataset.bloco) document.execCommand('formatBlock', false, btn.dataset.bloco);
+      else if (btn.dataset.cmd) document.execCommand(btn.dataset.cmd, false, null);
+    };
+  });
+})();
 
 // ===== Ícones estáticos =====
 function iconesEstaticos() {

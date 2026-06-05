@@ -69,7 +69,16 @@
       <label class="campo-rotulo">Prazo</label>
       <input id="det-prazo" class="det-prazo" type="date" />
       <label class="campo-rotulo">Anotação</label>
-      <textarea id="det-anotacao" class="det-anotacao" placeholder="Escreva detalhes, ideias, links..."></textarea>
+      <div class="editor-toolbar" id="editor-toolbar">
+        <button type="button" data-bloco="H1" title="Título">Título</button>
+        <button type="button" data-bloco="H2" title="Subtítulo">Subtítulo</button>
+        <button type="button" data-bloco="P" title="Corpo">Corpo</button>
+        <span class="sep"></span>
+        <button type="button" class="bold" data-cmd="bold" title="Negrito">N</button>
+        <button type="button" class="ital" data-cmd="italic" title="Itálico">I</button>
+        <button type="button" data-cmd="insertUnorderedList" title="Lista" aria-label="Lista"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+      </div>
+      <div id="det-anotacao" class="det-anotacao editor" contenteditable="true" data-placeholder="Escreva detalhes, ideias, links..."></div>
       <button id="btn-salvar" class="btn-salvar">Salvar alterações</button>
     </aside>
   </div>
