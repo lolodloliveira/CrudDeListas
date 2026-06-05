@@ -293,15 +293,42 @@ function fecharDetalhe() {
 }
 
 // ===== Eventos =====
-$('form-lista').onsubmit = async (e) => {
-  e.preventDefault();
-  const titulo = $('nova-lista').value.trim(); if (!titulo) return;
-  const nova = await api.criarLista({ titulo, cor_hex: $('nova-lista-cor').value });
+// ----- Modal: nova lista -----
+const CORES = ['#4F86C6','#6FB07F','#E2574C','#E8A23D','#9B72CF','#3FB6C9','#E26FA0','#5C6B7A'];
+let corSel = CORES[0], corCustom = '#4F86C6';
+function renderSwatches() {
+  const c = $('modal-cores'); c.innerHTML = '';
+  CORES.forEach(cor => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'swatch' + (cor === corSel ? ' sel' : '');
+    b.style.background = cor; b.setAttribute('aria-label', 'Cor ' + cor);
+    b.onclick = () => { corSel = cor; renderSwatches(); };
+    c.appendChild(b);
+  });
+  const custom = (CORES.includes(corSel)) ? corCustom : corSel;
+  const lab = document.createElement('label');
+  lab.className = 'swatch custom' + (!CORES.includes(corSel) ? ' sel' : '');
+  if (!CORES.includes(corSel)) { lab.style.background = corSel; lab.innerHTML = `<input type="color" value="${custom}" />`; }
+  else { lab.innerHTML = ic('plus', 16) + `<input type="color" value="${custom}" />`; }
+  lab.querySelector('input').oninput = (e) => { corCustom = e.target.value; corSel = e.target.value; renderSwatches(); };
+  c.appendChild(lab);
+}
+function abrirModalLista() { $('modal-nome').value = ''; corSel = CORES[0]; renderSwatches(); $('modal-lista').hidden = false; setTimeout(() => $('modal-nome').focus(), 40); }
+function fecharModalLista() { $('modal-lista').hidden = true; }
+async function criarListaModal() {
+  const titulo = $('modal-nome').value.trim();
+  if (!titulo) { $('modal-nome').focus(); return; }
+  const nova = await api.criarLista({ titulo, cor_hex: corSel });
   nova.tarefas = nova.tarefas || []; dados.push(nova);
-  $('nova-lista').value = ''; termoBusca = ''; $('busca').value = '';
-  listaAtivaId = nova.id; expandidaId = null;
-  renderListas(); renderTarefas(); toast('Lista criada', 'sucesso');
-};
+  termoBusca = ''; $('busca').value = ''; listaAtivaId = nova.id; expandidaId = null;
+  fecharModalLista(); renderListas(); renderTarefas(); toast('Lista criada', 'sucesso');
+}
+$('btn-nova-lista').onclick = abrirModalLista;
+$('modal-cancelar').onclick = fecharModalLista;
+$('modal-criar').onclick = criarListaModal;
+$('modal-nome').addEventListener('keydown', (e) => { if (e.key === 'Enter') criarListaModal(); });
+$('modal-lista').addEventListener('click', (e) => { if (e.target.id === 'modal-lista') fecharModalLista(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('modal-lista').hidden) fecharModalLista(); });
 $('form-tarefa').onsubmit = async (e) => {
   e.preventDefault();
   const descricao = $('nova-tarefa').value.trim(); if (!descricao || !listaAtivaId) return;
@@ -379,7 +406,7 @@ function elementoApos(ul, y, sel) {
 
 // ===== Ícones estáticos =====
 function iconesEstaticos() {
-  $('form-lista').querySelector('button').innerHTML = ic('plus', 18);
+  $('btn-nova-lista').innerHTML = ic('plus', 16) + ' Nova lista';
   $('btn-excluir-lista').innerHTML = ic('trash', 16);
   $('btn-fechar').innerHTML = ic('x', 18);
   $('btn-fixar').innerHTML = ic('pin', 17);

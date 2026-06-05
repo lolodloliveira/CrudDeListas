@@ -8,7 +8,6 @@
 </head>
 <body>
   <div class="app" id="app">
-    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="topo-side">
         <h1 class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6M9 16h4"/></svg> Listas</h1>
@@ -19,14 +18,9 @@
         <input id="busca" class="busca" type="search" placeholder="Buscar tarefas..." />
       </div>
       <ul id="listas" class="listas"></ul>
-      <form id="form-lista" class="form-lista">
-        <input id="nova-lista" type="text" placeholder="Nova lista..." maxlength="40" />
-        <input id="nova-lista-cor" type="color" value="#4F86C6" title="Cor da lista" aria-label="Cor da lista" />
-        <button type="submit" title="Criar lista" aria-label="Criar lista"></button>
-      </form>
+      <button id="btn-nova-lista" class="btn-nova-lista">Nova lista</button>
     </aside>
 
-    <!-- Conteúdo -->
     <main class="conteudo">
       <header class="cabecalho">
         <div class="titulo-lista">
@@ -58,7 +52,6 @@
       <p id="vazio" class="vazio">Crie uma lista para começar.</p>
     </main>
 
-    <!-- Detalhe -->
     <aside class="detalhe" id="detalhe" hidden>
       <div class="detalhe-topo">
         <button id="btn-fechar" class="btn-icone" title="Fechar" aria-label="Fechar"></button>
@@ -79,6 +72,19 @@
       <textarea id="det-anotacao" class="det-anotacao" placeholder="Escreva detalhes, ideias, links..."></textarea>
       <button id="btn-salvar" class="btn-salvar">Salvar alterações</button>
     </aside>
+  </div>
+
+  <!-- Modal: nova lista -->
+  <div id="modal-lista" class="modal-overlay" hidden>
+    <div class="modal-card">
+      <h3>Nova lista</h3>
+      <input id="modal-nome" class="modal-nome" type="text" placeholder="Nome da lista" maxlength="40" />
+      <div class="cores" id="modal-cores"></div>
+      <div class="modal-acoes">
+        <button id="modal-cancelar" class="btn-sec">Cancelar</button>
+        <button id="modal-criar" class="btn-pri">Criar lista</button>
+      </div>
+    </div>
   </div>
 
   <div id="toasts" class="toasts"></div>
