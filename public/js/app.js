@@ -11,6 +11,7 @@ const ICN = {
   plus:'<path d="M12 5v14M5 12h14"/>',
   chevron:'<path d="m6 9 6 6 6-6"/>',
   edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  clipboard:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6M9 16h4"/>',
   logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
 };
 const ic = (n, s = 18) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICN[n] || ''}</svg>`;
@@ -118,9 +119,15 @@ function renderTarefas() {
   $('btn-excluir-lista').hidden = !lista;
   mostrarFerramentas(!!lista);
   if (!lista) {
-    $('titulo-lista').textContent = 'Selecione uma lista';
+    $('titulo-lista').textContent = dados.length ? 'Selecione uma lista' : 'Bem-vindo!';
     $('ponto-cor').style.background = 'var(--border)';
-    vazio.hidden = dados.length > 0; vazio.textContent = 'Crie uma lista para começar.';
+    vazio.hidden = false;
+    if (dados.length === 0) {
+      vazio.innerHTML = `<div class="empty-state">${ic('clipboard', 46)}<p>Você ainda não tem nenhuma lista.</p><button id="empty-criar" class="btn-pri-empty">${ic('plus', 16)} Criar primeira lista</button></div>`;
+      const b = $('empty-criar'); if (b) b.onclick = abrirModalLista;
+    } else {
+      vazio.textContent = 'Selecione uma lista ao lado.';
+    }
     return;
   }
   $('titulo-lista').textContent = lista.titulo;
