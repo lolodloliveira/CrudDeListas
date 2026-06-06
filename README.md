@@ -2,6 +2,8 @@
 
 Aplicação web para **organização e gestão de tarefas**, voltada a estudantes e pequenos times que precisam de agilidade e centralização. Inspirada no app de Notas do iPhone: listas, tarefas, **anotações**, **checklists**, **prazos** e **prioridade visual** — com interface fluida e modo claro/escuro.
 
+> 🔐 Agora com **login** (sessão salva — você entra uma vez) e listas **por usuário**. Conta de teste: demo@demo.com / demo123
+
 > 🚧 **Status: protótipo funcional.** Roda sem banco de dados externo (armazenamento em arquivo JSON). Os models Mongoose para a versão final estão em [`src/models`](./src/models).
 
 ---

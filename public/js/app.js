@@ -11,6 +11,7 @@ const ICN = {
   plus:'<path d="M12 5v14M5 12h14"/>',
   chevron:'<path d="m6 9 6 6 6-6"/>',
   edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
 };
 const ic = (n, s = 18) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICN[n] || ''}</svg>`;
 
@@ -21,22 +22,26 @@ let ocultarConcluidas = false, termoBusca = '', filtroEtiqueta = '';
 let focarAddDe = null;
 
 // ===== API =====
-const H = { 'Content-Type': 'application/json' };
+let usuario = null;
+try { usuario = JSON.parse(localStorage.getItem('usuario') || 'null'); } catch (e) {}
 const j = (r) => r.json();
+const hdr = (json) => { const h = {}; if (json) h['Content-Type'] = 'application/json'; if (usuario) h['X-Usuario-Id'] = usuario.id; return h; };
 const api = {
-  listar: () => fetch('/api/listas').then(j),
-  criarLista: (d) => fetch('/api/listas', { method:'POST', headers:H, body:JSON.stringify(d) }).then(j),
-  excluirLista: (id) => fetch(`/api/listas/${id}`, { method:'DELETE' }),
-  reordenarListas: (ordem) => fetch('/api/listas/reordenar', { method:'PATCH', headers:H, body:JSON.stringify({ ordem }) }),
-  criarTarefa: (lid, d) => fetch(`/api/listas/${lid}/tarefas`, { method:'POST', headers:H, body:JSON.stringify(d) }).then(j),
-  salvarTarefa: (lid, tid, d) => fetch(`/api/listas/${lid}/tarefas/${tid}`, { method:'PUT', headers:H, body:JSON.stringify(d) }).then(j),
-  toggleTarefa: (lid, tid) => fetch(`/api/listas/${lid}/tarefas/${tid}/status`, { method:'PATCH' }).then(j),
-  fixarTarefa: (lid, tid) => fetch(`/api/listas/${lid}/tarefas/${tid}/fixar`, { method:'PATCH' }).then(j),
-  excluirTarefa: (lid, tid) => fetch(`/api/listas/${lid}/tarefas/${tid}`, { method:'DELETE' }),
-  reordenarTarefas: (lid, ordem) => fetch(`/api/listas/${lid}/tarefas/reordenar`, { method:'PATCH', headers:H, body:JSON.stringify({ ordem }) }),
-  addItem: (lid, tid, d) => fetch(`/api/listas/${lid}/tarefas/${tid}/checklist`, { method:'POST', headers:H, body:JSON.stringify(d) }).then(j),
-  toggleItem: (lid, tid, iid) => fetch(`/api/listas/${lid}/tarefas/${tid}/checklist/${iid}`, { method:'PATCH' }).then(j),
-  removeItem: (lid, tid, iid) => fetch(`/api/listas/${lid}/tarefas/${tid}/checklist/${iid}`, { method:'DELETE' }),
+  listar: () => fetch('/api/listas', { headers: hdr() }).then(j),
+  criarLista: (d) => fetch('/api/listas', { method:'POST', headers:hdr(1), body:JSON.stringify(d) }).then(j),
+  excluirLista: (id) => fetch(`/api/listas/${id}`, { method:'DELETE', headers: hdr() }),
+  reordenarListas: (ordem) => fetch('/api/listas/reordenar', { method:'PATCH', headers:hdr(1), body:JSON.stringify({ ordem }) }),
+  criarTarefa: (lid, d) => fetch(`/api/listas/${lid}/tarefas`, { method:'POST', headers:hdr(1), body:JSON.stringify(d) }).then(j),
+  salvarTarefa: (lid, tid, d) => fetch(`/api/listas/${lid}/tarefas/${tid}`, { method:'PUT', headers:hdr(1), body:JSON.stringify(d) }).then(j),
+  toggleTarefa: (lid, tid) => fetch(`/api/listas/${lid}/tarefas/${tid}/status`, { method:'PATCH', headers: hdr() }).then(j),
+  fixarTarefa: (lid, tid) => fetch(`/api/listas/${lid}/tarefas/${tid}/fixar`, { method:'PATCH', headers: hdr() }).then(j),
+  excluirTarefa: (lid, tid) => fetch(`/api/listas/${lid}/tarefas/${tid}`, { method:'DELETE', headers: hdr() }),
+  reordenarTarefas: (lid, ordem) => fetch(`/api/listas/${lid}/tarefas/reordenar`, { method:'PATCH', headers:hdr(1), body:JSON.stringify({ ordem }) }),
+  addItem: (lid, tid, d) => fetch(`/api/listas/${lid}/tarefas/${tid}/checklist`, { method:'POST', headers:hdr(1), body:JSON.stringify(d) }).then(j),
+  toggleItem: (lid, tid, iid) => fetch(`/api/listas/${lid}/tarefas/${tid}/checklist/${iid}`, { method:'PATCH', headers: hdr() }).then(j),
+  removeItem: (lid, tid, iid) => fetch(`/api/listas/${lid}/tarefas/${tid}/checklist/${iid}`, { method:'DELETE', headers: hdr() }),
+  login: (d) => fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(d) }),
+  cadastro: (d) => fetch('/api/auth/cadastro', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(d) }),
 };
 
 // ===== Util =====
@@ -425,8 +430,40 @@ function iconesEstaticos() {
   $('btn-excluir-lista').innerHTML = ic('trash', 16);
   $('btn-fechar').innerHTML = ic('x', 18);
   $('btn-fixar').innerHTML = ic('pin', 17);
+  $('btn-logout').innerHTML = ic('logout', 17);
   $('btn-excluir-tarefa').innerHTML = ic('trash', 15) + ' Excluir';
 }
+
+// ===== Início =====
+// ===== Sessão / login =====
+function mostrarApp() {
+  $('tela-login').hidden = true; $('app').hidden = false;
+  $('user-avatar').textContent = (usuario.nome || '?').trim().charAt(0).toUpperCase();
+  $('user-nome').textContent = usuario.nome;
+  listaAtivaId = null; tarefaAtivaId = null; expandidaId = null;
+  carregar();
+}
+function mostrarLogin() { $('app').hidden = true; $('tela-login').hidden = false; setTimeout(() => $('login-email').focus(), 50); }
+function entrar(u) { usuario = u; try { localStorage.setItem('usuario', JSON.stringify(u)); } catch (e) {} mostrarApp(); }
+function sair() { try { localStorage.removeItem('usuario'); } catch (e) {} location.reload(); }
+
+$('form-login').onsubmit = async (e) => {
+  e.preventDefault(); $('login-erro').hidden = true;
+  const r = await api.login({ email: $('login-email').value.trim(), senha: $('login-senha').value });
+  const d = await r.json();
+  if (!r.ok) { $('login-erro').textContent = d.erro || 'Erro ao entrar.'; $('login-erro').hidden = false; return; }
+  entrar(d);
+};
+$('form-cadastro').onsubmit = async (e) => {
+  e.preventDefault(); $('cad-erro').hidden = true;
+  const r = await api.cadastro({ nome: $('cad-nome').value.trim(), email: $('cad-email').value.trim(), senha: $('cad-senha').value });
+  const d = await r.json();
+  if (!r.ok) { $('cad-erro').textContent = d.erro || 'Erro ao cadastrar.'; $('cad-erro').hidden = false; return; }
+  entrar(d);
+};
+$('ir-cadastro').onclick = (e) => { e.preventDefault(); $('form-login').hidden = true; $('ir-cadastro').hidden = true; $('form-cadastro').hidden = false; $('ir-login').hidden = false; setTimeout(() => $('cad-nome').focus(), 30); };
+$('ir-login').onclick = (e) => { e.preventDefault(); $('form-cadastro').hidden = true; $('ir-login').hidden = true; $('form-login').hidden = false; $('ir-cadastro').hidden = false; setTimeout(() => $('login-email').focus(), 30); };
+$('btn-logout').onclick = sair;
 
 // ===== Início =====
 (function init() {
@@ -434,5 +471,5 @@ function iconesEstaticos() {
   try { tema = localStorage.getItem('tema') || 'light'; } catch (e) {}
   aplicarTema(tema);
   iconesEstaticos();
-  carregar();
+  if (usuario) mostrarApp(); else mostrarLogin();
 })();

@@ -1,11 +1,10 @@
 const store = require('../store');
-const acharLista = (db, id) => db.listas.find((l) => l.id === id);
 function ctx(req, res) {
   const db = store.read();
-  const lista = acharLista(db, req.params.listaId);
+  const lista = db.listas.find(l => l.id === req.params.listaId && l.usuarioId === req.userId);
   if (!lista) { res.status(404).json({ erro: 'Lista não encontrada.' }); return null; }
   if (req.params.tarefaId) {
-    const tarefa = lista.tarefas.find((t) => t.id === req.params.tarefaId);
+    const tarefa = lista.tarefas.find(t => t.id === req.params.tarefaId);
     if (!tarefa) { res.status(404).json({ erro: 'Tarefa não encontrada.' }); return null; }
     return { db, lista, tarefa };
   }
@@ -42,10 +41,9 @@ exports.fixar = (req, res) => {
 };
 exports.excluir = (req, res) => {
   const c = ctx(req, res); if (!c) return;
-  c.lista.tarefas = c.lista.tarefas.filter((t) => t.id !== req.params.tarefaId);
+  c.lista.tarefas = c.lista.tarefas.filter(t => t.id !== req.params.tarefaId);
   store.write(c.db); res.status(204).end();
 };
-// Reordenar tarefas dentro da lista (drag-and-drop)
 exports.reordenar = (req, res) => {
   const c = ctx(req, res); if (!c) return;
   const ordem = req.body.ordem || [];
@@ -54,7 +52,7 @@ exports.reordenar = (req, res) => {
   store.write(c.db); res.json(c.lista.tarefas);
 };
 
-// --- Checklist (UC06) ---
+// Checklist
 exports.addChecklist = (req, res) => {
   const c = ctx(req, res); if (!c) return;
   const { texto } = req.body;
@@ -65,12 +63,12 @@ exports.addChecklist = (req, res) => {
 };
 exports.toggleChecklist = (req, res) => {
   const c = ctx(req, res); if (!c) return;
-  const item = (c.tarefa.checklist || []).find((i) => i.id === req.params.itemId);
+  const item = (c.tarefa.checklist || []).find(i => i.id === req.params.itemId);
   if (!item) return res.status(404).json({ erro: 'Item não encontrado.' });
   item.concluido = !item.concluido; store.write(c.db); res.json(item);
 };
 exports.removeChecklist = (req, res) => {
   const c = ctx(req, res); if (!c) return;
-  c.tarefa.checklist = (c.tarefa.checklist || []).filter((i) => i.id !== req.params.itemId);
+  c.tarefa.checklist = (c.tarefa.checklist || []).filter(i => i.id !== req.params.itemId);
   store.write(c.db); res.status(204).end();
 };

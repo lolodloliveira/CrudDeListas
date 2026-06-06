@@ -7,7 +7,38 @@
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-  <div class="app" id="app">
+  <!-- ===== Tela inicial: boas-vindas + login ===== -->
+  <div id="tela-login" class="tela-login">
+    <div class="login-card">
+      <div class="login-logo"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6M9 16h4"/></svg></div>
+      <h1>CRUD de Listas</h1>
+      <p class="login-sub">Organize suas tarefas com listas, notas e checklists.</p>
+
+      <form id="form-login" class="login-form">
+        <input id="login-email" type="email" placeholder="E-mail" autocomplete="username" required />
+        <input id="login-senha" type="password" placeholder="Senha" autocomplete="current-password" required />
+        <button type="submit">Entrar</button>
+        <p id="login-erro" class="login-erro" hidden></p>
+      </form>
+
+      <form id="form-cadastro" class="login-form" hidden>
+        <input id="cad-nome" type="text" placeholder="Nome" required />
+        <input id="cad-email" type="email" placeholder="E-mail" required />
+        <input id="cad-senha" type="password" placeholder="Senha (mín. 4 caracteres)" minlength="4" required />
+        <button type="submit">Criar conta</button>
+        <p id="cad-erro" class="login-erro" hidden></p>
+      </form>
+
+      <p class="login-troca">
+        <a id="ir-cadastro" href="#">Não tem conta? <b>Cadastre-se</b></a>
+        <a id="ir-login" href="#" hidden>Já tem conta? <b>Entrar</b></a>
+      </p>
+      <p class="login-demo">Conta de teste: <b>demo@demo.com</b> / <b>demo123</b></p>
+    </div>
+  </div>
+
+  <!-- ===== App ===== -->
+  <div class="app" id="app" hidden>
     <aside class="sidebar">
       <div class="topo-side">
         <h1 class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6M9 16h4"/></svg> Listas</h1>
@@ -19,6 +50,11 @@
       </div>
       <ul id="listas" class="listas"></ul>
       <button id="btn-nova-lista" class="btn-nova-lista">Nova lista</button>
+      <div class="user-bar">
+        <span class="avatar" id="user-avatar">?</span>
+        <span class="user-nome" id="user-nome">—</span>
+        <button id="btn-logout" class="btn-tema" title="Sair" aria-label="Sair"></button>
+      </div>
     </aside>
 
     <main class="conteudo">
@@ -83,7 +119,6 @@
     </aside>
   </div>
 
-  <!-- Modal: nova lista -->
   <div id="modal-lista" class="modal-overlay" hidden>
     <div class="modal-card">
       <h3>Nova lista</h3>
