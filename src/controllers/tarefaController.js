@@ -1,7 +1,8 @@
 const store = require('../store');
+const acessivel = (l, uid) => l.usuarioId === uid || (l.colaboradores || []).includes(uid);
 function ctx(req, res) {
   const db = store.read();
-  const lista = db.listas.find(l => l.id === req.params.listaId && l.usuarioId === req.userId);
+  const lista = db.listas.find(l => l.id === req.params.listaId && acessivel(l, req.userId));
   if (!lista) { res.status(404).json({ erro: 'Lista não encontrada.' }); return null; }
   if (req.params.tarefaId) {
     const tarefa = lista.tarefas.find(t => t.id === req.params.tarefaId);

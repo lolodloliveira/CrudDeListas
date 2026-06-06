@@ -62,7 +62,10 @@
           <span id="ponto-cor" class="ponto-cor"></span>
           <h2 id="titulo-lista">Selecione uma lista</h2>
         </div>
-        <button id="btn-excluir-lista" class="btn-perigo" title="Excluir lista" aria-label="Excluir lista" hidden></button>
+        <div class="acoes-cab">
+          <button id="btn-compartilhar" class="btn-cab" title="Compartilhar lista" hidden></button>
+          <button id="btn-excluir-lista" class="btn-perigo" title="Excluir lista" aria-label="Excluir lista" hidden></button>
+        </div>
       </header>
 
       <div id="barra-ferramentas" class="ferramentas" hidden>
@@ -127,6 +130,20 @@
         <button id="modal-cancelar" class="btn-sec">Cancelar</button>
         <button id="modal-criar" class="btn-pri">Criar lista</button>
       </div>
+    </div>
+  </div>
+
+  <div id="modal-share" class="modal-overlay" hidden>
+    <div class="modal-card">
+      <h3>Compartilhar lista</h3>
+      <p class="share-sub">Quem você adicionar pode ver e editar esta lista.</p>
+      <form id="form-share" class="share-form">
+        <input id="share-email" type="email" placeholder="E-mail da pessoa" />
+        <button type="submit" class="btn-pri">Adicionar</button>
+      </form>
+      <p id="share-erro" class="login-erro" hidden></p>
+      <div class="membros" id="share-membros"></div>
+      <div class="modal-acoes"><button id="share-fechar" class="btn-sec">Fechar</button></div>
     </div>
   </div>
 

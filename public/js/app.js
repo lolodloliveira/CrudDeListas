@@ -11,6 +11,7 @@ const ICN = {
   plus:'<path d="M12 5v14M5 12h14"/>',
   chevron:'<path d="m6 9 6 6 6-6"/>',
   edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
   clipboard:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6M9 16h4"/>',
   logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
 };
@@ -43,6 +44,8 @@ const api = {
   removeItem: (lid, tid, iid) => fetch(`/api/listas/${lid}/tarefas/${tid}/checklist/${iid}`, { method:'DELETE', headers: hdr() }),
   login: (d) => fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(d) }),
   cadastro: (d) => fetch('/api/auth/cadastro', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(d) }),
+  compartilhar: (lid, email) => fetch(`/api/listas/${lid}/compartilhar`, { method:'POST', headers:hdr(1), body:JSON.stringify({ email }) }),
+  removerColaborador: (lid, uid) => fetch(`/api/listas/${lid}/compartilhar/${uid}`, { method:'DELETE', headers:hdr() }),
 };
 
 // ===== Util =====
@@ -95,7 +98,8 @@ function renderListas() {
     const li = document.createElement('li');
     li.className = 'item-lista' + (lista.id === listaAtivaId && !termoBusca ? ' ativa' : '');
     li.dataset.id = lista.id; li.draggable = true;
-    li.innerHTML = `<span class="bolinha" style="background:${lista.cor_hex}"></span><span class="nome">${esc(lista.titulo)}</span><span class="contador">${pend}</span>`;
+    const compartIc = ((lista.membros && lista.membros.length) || lista.ehDono === false) ? `<span class="lista-share-ic">${ic('users', 13)}</span>` : '';
+    li.innerHTML = `<span class="bolinha" style="background:${lista.cor_hex}"></span><span class="nome">${esc(lista.titulo)}</span>${compartIc}<span class="contador">${pend}</span>`;
     li.onclick = () => { termoBusca = ''; $('busca').value = ''; listaAtivaId = lista.id; expandidaId = null; renderListas(); renderTarefas(); };
     li.addEventListener('dragstart', () => li.classList.add('arrastando'));
     li.addEventListener('dragend', async () => {
@@ -117,6 +121,7 @@ function renderTarefas() {
   const lista = getLista(listaAtivaId);
   $('form-tarefa').hidden = !lista;
   $('btn-excluir-lista').hidden = !lista;
+  $('btn-compartilhar').hidden = true;
   mostrarFerramentas(!!lista);
   if (!lista) {
     $('titulo-lista').textContent = dados.length ? 'Selecione uma lista' : 'Bem-vindo!';
@@ -132,6 +137,7 @@ function renderTarefas() {
   }
   $('titulo-lista').textContent = lista.titulo;
   $('ponto-cor').style.background = lista.cor_hex;
+  $('btn-compartilhar').hidden = !lista.ehDono;
   atualizarFiltroEtiquetas(lista);
   atualizarProgresso(lista);
 
@@ -158,7 +164,7 @@ function refocoAdd() {
 function mostrarFerramentas(v) { $('barra-ferramentas').hidden = !v; $('progresso').hidden = !v; }
 
 function renderBusca(ul, vazio) {
-  $('form-tarefa').hidden = true; $('btn-excluir-lista').hidden = true;
+  $('form-tarefa').hidden = true; $('btn-excluir-lista').hidden = true; $('btn-compartilhar').hidden = true;
   $('titulo-lista').textContent = `Busca: "${termoBusca}"`;
   $('ponto-cor').style.background = 'var(--border)';
   const termo = termoBusca.toLowerCase(); const achados = [];
@@ -356,12 +362,14 @@ $('ocultar-concluidas').onchange = (e) => { ocultarConcluidas = e.target.checked
 $('btn-excluir-lista').onclick = async () => {
   if (!listaAtivaId) return;
   const lista = getLista(listaAtivaId);
-  if (!confirm(`Excluir a lista "${lista.titulo}" e todas as suas tarefas?`)) return;
+  const sair = !lista.ehDono;
+  const msg = sair ? `Sair da lista compartilhada "${lista.titulo}"?` : `Excluir a lista "${lista.titulo}" e todas as suas tarefas?`;
+  if (!confirm(msg)) return;
   await api.excluirLista(listaAtivaId);
   dados = dados.filter(l => l.id !== listaAtivaId);
   if (tarefaAtivaId && !getTarefa(tarefaAtivaId)) fecharDetalhe();
   listaAtivaId = dados.length ? dados[0].id : null; expandidaId = null;
-  renderListas(); renderTarefas(); toast('Lista excluída');
+  renderListas(); renderTarefas(); toast(sair ? 'Você saiu da lista' : 'Lista excluída');
 };
 $('btn-fechar').onclick = () => { fecharDetalhe(); renderTarefas(); };
 $('btn-fixar').onclick = async () => {
@@ -431,6 +439,45 @@ function elementoApos(ul, y, sel) {
   });
 })();
 
+// ===== Compartilhar lista =====
+let shareListaId = null;
+function abrirShare() {
+  shareListaId = listaAtivaId;
+  const l = getLista(shareListaId); if (!l) return;
+  $('share-email').value = ''; $('share-erro').hidden = true;
+  renderMembros(); $('modal-share').hidden = false;
+  setTimeout(() => $('share-email').focus(), 40);
+}
+function fecharShare() { $('modal-share').hidden = true; }
+function renderMembros() {
+  const l = getLista(shareListaId); const c = $('share-membros'); c.innerHTML = '';
+  const linha = (nome, papel, uid) => {
+    const d = document.createElement('div'); d.className = 'membro';
+    const ini = (nome || '?').trim().charAt(0).toUpperCase();
+    d.innerHTML = `<span class="av">${ini}</span><span class="nm">${esc(nome)}</span><span class="papel">${esc(papel)}</span>`;
+    if (uid) {
+      const b = document.createElement('button'); b.className = 'btn-icone'; b.title = 'Remover acesso'; b.innerHTML = ic('x', 15);
+      b.onclick = async () => { const r = await api.removerColaborador(shareListaId, uid); const j2 = await r.json(); l.membros = j2.membros; l.colaboradores = j2.colaboradores; renderMembros(); renderListas(); };
+      d.appendChild(b);
+    }
+    c.appendChild(d);
+  };
+  linha(usuario.nome + ' (você)', 'Dono');
+  (l.membros || []).forEach(m => linha(m.nome, m.email, m.id));
+}
+$('btn-compartilhar').onclick = abrirShare;
+$('share-fechar').onclick = fecharShare;
+$('modal-share').addEventListener('click', (e) => { if (e.target.id === 'modal-share') fecharShare(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('modal-share').hidden) fecharShare(); });
+$('form-share').onsubmit = async (e) => {
+  e.preventDefault(); $('share-erro').hidden = true;
+  const email = $('share-email').value.trim(); if (!email) return;
+  const r = await api.compartilhar(shareListaId, email); const j2 = await r.json();
+  if (!r.ok) { $('share-erro').textContent = j2.erro || 'Erro ao compartilhar.'; $('share-erro').hidden = false; return; }
+  const l = getLista(shareListaId); l.membros = j2.membros; l.colaboradores = j2.colaboradores;
+  $('share-email').value = ''; renderMembros(); renderListas(); toast('Lista compartilhada', 'sucesso');
+};
+
 // ===== Ícones estáticos =====
 function iconesEstaticos() {
   $('btn-nova-lista').innerHTML = ic('plus', 16) + ' Nova lista';
@@ -438,6 +485,7 @@ function iconesEstaticos() {
   $('btn-fechar').innerHTML = ic('x', 18);
   $('btn-fixar').innerHTML = ic('pin', 17);
   $('btn-logout').innerHTML = ic('logout', 17);
+  $('btn-compartilhar').innerHTML = ic('users', 15) + ' Compartilhar';
   $('btn-excluir-tarefa').innerHTML = ic('trash', 15) + ' Excluir';
 }
 

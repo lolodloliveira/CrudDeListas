@@ -12,7 +12,7 @@ const SEED = {
     { id:'u1', nome:'Estudante Demo', email:'demo@demo.com', senha: hash('demo123'), criadoEm: agora() }
   ],
   listas: [
-    { id:'l1', usuarioId:'u1', titulo:'Faculdade', cor_hex:'#4F86C6', criadaEm:agora(), tarefas:[
+    { id:'l1', usuarioId:'u1', colaboradores:[], titulo:'Faculdade', cor_hex:'#4F86C6', criadaEm:agora(), tarefas:[
       { id:'t1', descricao:'Entregar protótipo de Arquitetura', etiqueta:'Urgente', status:'pendente', prazo:dia(-2), fixada:true,
         anotacao:'<h2>Lembretes</h2><p>Subir no GitHub e testar no PC da faculdade antes de apresentar.</p>', checklist:[
         { id:'c1', texto:'Subir código no GitHub', concluido:true },
@@ -20,7 +20,7 @@ const SEED = {
         { id:'c3', texto:'Preparar fala da demo', concluido:false } ], criadaEm:agora() },
       { id:'t2', descricao:'Revisar diagrama de classes', etiqueta:'Estudo', status:'pendente', prazo:dia(0), fixada:false, anotacao:'', checklist:[], criadaEm:agora() },
       { id:'t4', descricao:'Estudar para a prova', etiqueta:'Estudo', status:'concluida', prazo:null, fixada:false, anotacao:'', checklist:[], criadaEm:agora() } ] },
-    { id:'l2', usuarioId:'u1', titulo:'Pessoal', cor_hex:'#6FB07F', criadaEm:agora(), tarefas:[
+    { id:'l2', usuarioId:'u1', colaboradores:[], titulo:'Pessoal', cor_hex:'#6FB07F', criadaEm:agora(), tarefas:[
       { id:'t3', descricao:'Comprar mantimentos', etiqueta:'Casa', status:'pendente', prazo:dia(3), fixada:false, anotacao:'', checklist:[
         { id:'c4', texto:'Arroz', concluido:false },
         { id:'c5', texto:'Café', concluido:false } ], criadaEm:agora() } ] } ]

@@ -12,6 +12,10 @@ router.post('/', lista.criar);
 router.put('/:id', lista.atualizar);
 router.delete('/:id', lista.excluir);
 
+// Compartilhamento (colaboração)
+router.post('/:id/compartilhar', lista.compartilhar);
+router.delete('/:id/compartilhar/:userId', lista.removerColaborador);
+
 // Reordenar tarefas (antes das rotas com :tarefaId)
 router.patch('/:listaId/tarefas/reordenar', tarefa.reordenar);
 
