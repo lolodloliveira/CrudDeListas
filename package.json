@@ -1,6 +1,6 @@
 {
   "name": "crud-de-listas",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Protótipo web de gestão de tarefas: listas, anotações, checklists, prazos, ordenação e busca.",
   "main": "src/server.js",
   "scripts": {
