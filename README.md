@@ -1,43 +1,43 @@
-# CRUD de Listas
+# 📋 CRUD de Listas
 
-Aplicação web para **organização e gestão de tarefas**, voltada a estudantes e pequenos times que precisam de agilidade e centralização. Inspirada no app de Notas do iPhone: cada usuário cria listas, adiciona tarefas com **prazo**, **etiquetas** e **checklists**, e escreve **notas formatadas** dentro de cada tarefa — tudo numa interface fluida com modo claro/escuro.
+> Aplicação web para **organização e gestão de tarefas**, voltada a estudantes e pequenos times. Cada usuário cria listas, adiciona tarefas com prazo, etiquetas e checklists, escreve notas formatadas e pode **compartilhar listas** com outras contas — tudo numa interface fluida, inspirada no app de Notas do iPhone.
 
-> 🔐 Tem **login com sessão salva** (você entra uma vez) e os dados são **por usuário**.
-> 🚧 **Status: protótipo funcional.** Roda sem banco externo (armazenamento em arquivo JSON). Os models Mongoose para a versão final estão em [`src/models`](./src/models).
+![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white)
+![Status](https://img.shields.io/badge/status-prot%C3%B3tipo%20funcional-blue)
+![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-green)
 
 ---
 
-## ▶️ Como rodar
+## 📑 Sobre o projeto
 
-Pré-requisito: [Node.js](https://nodejs.org/) 18+.
+Projeto desenvolvido para a disciplina de **Arquitetura de Software**. O objetivo é uma ferramenta de produtividade que centralize tarefas acadêmicas e pessoais, com foco em **agilidade**, **organização** e **colaboração**.
 
-```bash
-npm install
-npm start
-```
+O sistema implementa um **CRUD completo** (criar, ler, atualizar e excluir) de listas e tarefas, com autenticação de usuário e compartilhamento entre contas. A arquitetura é organizada em camadas (interface, servidor e armazenamento), seguindo o princípio de **separação de responsabilidades**.
 
-Abra **http://localhost:3000**, crie uma conta (ou faça login) e comece a usar. Os dados ficam em `data/db.json`, criado automaticamente.
+> 🔐 Tem **login com sessão salva** (você entra uma vez) e os dados são **isolados por usuário**.
+> 🚧 **Status: protótipo funcional.** Roda sem banco de dados externo (armazenamento em arquivo JSON). Os _schemas_ Mongoose para a versão final já estão em [`src/models`](./src/models).
 
 ---
 
 ## ✨ Funcionalidades
 
-**Conta e sessão**
-- Cadastro e login de usuário (senha guardada com hash SHA-256).
-- Sessão salva no navegador: você entra uma vez e o app lembra de você.
-- Cada usuário vê e gerencia apenas as **suas** listas (isolamento de dados).
+**Conta e colaboração**
+- Cadastro e login de usuário (senha protegida com hash SHA-256).
+- Sessão salva no navegador: entra uma vez e o app lembra de você.
+- Dados isolados por usuário — cada um vê só as suas listas.
+- **Compartilhamento de listas:** o dono adiciona outra conta por e-mail e ambos passam a ver e editar a lista (tarefas, notas e checklists). Dono pode remover acesso; colaborador pode sair.
 
 **Listas e tarefas**
-- Criar listas por um popup, com **cor** personalizada (UC01 / UC02).
-- Adicionar, concluir, editar e excluir tarefas (UC01 / UC03 / UC05).
-- **Ocultar concluídas** e **filtrar por etiqueta** (UC04 / UC02).
+- Criar listas por um popup, com **cor** personalizada.
+- Adicionar, concluir, editar, excluir e **reordenar** (arrastar) tarefas e listas.
 - **Prazo** por tarefa, com **atrasadas em vermelho** e **vence hoje** em destaque.
-- **Fixar** tarefas no topo e **arrastar para reordenar** listas e tarefas.
+- **Fixar** tarefas no topo, **ocultar concluídas** e **filtrar por etiqueta**.
 - **Busca** por tarefas em todas as listas.
 - **Painel de progresso** com % concluído por lista.
 
 **Notas e checklists**
-- **Checklist** que expande inline ao clicar na tarefa (UC06).
+- **Checklist** que expande inline ao clicar na tarefa.
 - **Editor de notas formatado** na tarefa: Título, Subtítulo, Corpo, negrito, itálico e listas.
 
 **Interface**
@@ -46,15 +46,42 @@ Abra **http://localhost:3000**, crie uma conta (ou faça login) e comece a usar.
 
 ---
 
+## 🚀 Como usar (passo a passo)
+
+1. Crie uma conta na tela inicial (ou faça login).
+2. Clique em **Nova lista**, dê um nome e escolha uma cor.
+3. Adicione tarefas no campo central. Clique numa tarefa para abrir o **checklist** embaixo dela.
+4. No ícone de **detalhes** (lápis) da tarefa, defina **prazo**, **etiqueta** e escreva uma **nota formatada**.
+5. Marque tarefas como concluídas no círculo à esquerda; use **Ocultar concluídas** para limpar a visão.
+6. Para colaborar, clique em **Compartilhar** numa lista sua e informe o e-mail de outra conta.
+
+---
+
+## 🏗️ Arquitetura
+
+O projeto se divide em três camadas que se comunicam por uma **API REST**:
+
+```
+  Navegador (Frontend)        Servidor (Backend)            Armazenamento
+  public/  HTML+CSS+JS   ⇄    src/  Node.js + Express   ⇄   data/db.json
+  (a interface)               (rotas → controllers)         (a "memória")
+```
+
+Fluxo de uma ação: **o usuário clica → o frontend faz um pedido (`fetch`) a uma rota → o controller valida e processa → o `store` salva no `db.json` → o servidor responde → a tela é atualizada.**
+
+> Uma explicação detalhada, em linguagem simples, está em [`GUIA_DO_CODIGO.md`](./GUIA_DO_CODIGO.md).
+
+---
+
 ## 🧱 Modelo de domínio
 
-| Entidade   | Atributos                                   | Papel |
-|------------|---------------------------------------------|-------|
-| `Usuario`  | id, nome, email, senha                      | Autenticação e autoria das listas. |
-| `Lista`    | id, titulo, cor_hex, usuarioId, dataCriacao | Agrupador de tarefas, pertence a um usuário. |
-| `Tarefa`   | id, descricao, status, prazo, etiqueta, anotacao | Unidade de trabalho. |
-| `Etiqueta` | nome, cor                                   | Classificador das tarefas. |
-| `Checklist`| itemTexto, concluido                        | Subitens de uma tarefa. |
+| Entidade   | Atributos principais                                   | Papel |
+|------------|--------------------------------------------------------|-------|
+| `Usuario`  | id, nome, email, senha (hash)                          | Autenticação e autoria das listas. |
+| `Lista`    | id, titulo, cor_hex, usuarioId, colaboradores          | Agrupador de tarefas; pertence a um usuário e pode ser compartilhado. |
+| `Tarefa`   | id, descricao, status, prazo, etiqueta, anotacao, fixada | Unidade de trabalho. |
+| `Etiqueta` | nome, cor                                              | Classificador das tarefas. |
+| `Checklist`| itemTexto, concluido                                   | Subitens de uma tarefa. |
 
 Relacionamentos: um `Usuario` gerencia muitas `Lista`s; uma `Lista` contém muitas `Tarefa`s; uma `Tarefa` possui itens de `Checklist` e pode ter `Etiqueta`.
 
@@ -63,54 +90,57 @@ Relacionamentos: um `Usuario` gerencia muitas `Lista`s; uma `Lista` contém muit
 ## 🛠️ Tecnologias
 
 - **Backend:** Node.js + Express
+- **Frontend:** HTML, CSS e JavaScript puro (sem frameworks)
 - **Armazenamento (protótipo):** arquivo JSON (`data/db.json`)
 - **Banco (versão final):** MongoDB + Mongoose (scaffolding em `src/models` e `src/config`)
-- **Frontend:** HTML, CSS e JavaScript puro (sem frameworks)
+- **Fonte:** Outfit (embutida para uso offline)
 
 ---
 
-## 📂 Estrutura
+## 📂 Estrutura de pastas
 
 ```
-crud-de-listas/
+CruddeListas/
 ├── public/                  # Frontend
-│   ├── index.html
-│   ├── css/style.css
-│   ├── js/app.js
+│   ├── index.html           # Estrutura das telas
+│   ├── css/style.css        # Visual (tema claro/escuro)
+│   ├── js/app.js            # Comportamento e chamadas à API
 │   └── fonts/               # Fonte Outfit (offline)
-├── src/
-│   ├── store.js             # Armazenamento JSON (protótipo)
-│   ├── controllers/         # auth, lista, tarefa (UC01–UC06)
-│   ├── routes/              # Endpoints da API
+├── src/                     # Backend
+│   ├── server.js            # Inicia o servidor (porta 3000)
+│   ├── app.js               # Configura Express e conecta rotas
+│   ├── store.js             # Lê/grava o db.json
+│   ├── routes/              # Endereços da API (auth, listas)
+│   ├── controllers/         # Lógica (auth, lista, tarefa)
 │   ├── models/ config/ middlewares/   # Versão final (Mongoose, auth)
-│   ├── app.js  server.js
-├── data/                    # db.json (gerado em runtime, ignorado pelo Git)
+├── data/db.json             # Dados (gerado em runtime, ignorado pelo Git)
+├── GUIA_DO_CODIGO.md        # Explicação do código em linguagem simples
 ├── package.json
 └── README.md
 ```
 
 ---
 
-## 🔌 Principais endpoints
+## 🔌 Principais endpoints da API
 
 | Método | Rota | Função |
 |--------|------|--------|
 | POST | `/api/auth/cadastro` · `/api/auth/login` | Criar conta / autenticar |
-| GET/POST | `/api/listas` | Listar / criar lista (do usuário) |
-| PUT/DELETE | `/api/listas/:id` | Editar / excluir lista |
-| PATCH | `/api/listas/reordenar` | Reordenar listas |
+| GET / POST | `/api/listas` | Listar / criar lista |
+| PUT / DELETE | `/api/listas/:id` | Editar / excluir (ou sair) da lista |
+| POST | `/api/listas/:id/compartilhar` | Compartilhar lista por e-mail |
+| DELETE | `/api/listas/:id/compartilhar/:userId` | Remover colaborador |
 | POST | `/api/listas/:id/tarefas` | Criar tarefa |
-| PUT | `/api/listas/:id/tarefas/:tid` | Editar (descrição, etiqueta, status, prazo, anotação) |
-| PATCH | `/api/listas/:id/tarefas/:tid/status` · `/fixar` | Concluir/reabrir · fixar |
-| PATCH | `/api/listas/:id/tarefas/reordenar` | Reordenar tarefas |
+| PUT | `/api/listas/:id/tarefas/:tid` | Editar tarefa (descrição, status, prazo, nota…) |
+| PATCH | `…/status` · `…/fixar` | Concluir/reabrir · fixar |
 | DELETE | `/api/listas/:id/tarefas/:tid` | Excluir tarefa |
-| POST/PATCH/DELETE | `.../checklist/...` | Itens do checklist (UC06) |
+| POST/PATCH/DELETE | `…/checklist/…` | Itens do checklist |
 
 > As rotas de lista/tarefa exigem o cabeçalho de sessão do usuário.
 
 ---
 
-## ✅ Casos de uso
+## ✅ Casos de uso atendidos
 
 | Caso de uso | Status |
 |---|---|
@@ -120,20 +150,40 @@ crud-de-listas/
 | UC04 – Ocultar tarefas finalizadas | ✅ |
 | UC05 – Editar detalhes da tarefa | ✅ |
 | UC06 – Gerenciar checklists | ✅ |
-| Autenticação de usuário (`Usuario`) | ✅ |
+| Autenticação de usuário | ✅ |
+| Compartilhamento de listas | ✅ |
+
+---
+
+## ▶️ Como rodar localmente
+
+Pré-requisito: [Node.js](https://nodejs.org/) 18 ou superior.
+
+```bash
+npm install
+npm start
+```
+
+Depois abra **http://localhost:3000** no navegador.
 
 ---
 
 ## 🗺️ Próximos passos
 
-- [ ] Compartilhar listas entre usuários (`Lista.compartilhar()`)
 - [ ] Etiquetas como entidade com cores próprias
-- [ ] Migrar armazenamento para MongoDB
+- [ ] Visão "Hoje" / "Atrasadas" agregando tarefas por prazo
+- [ ] Migrar o armazenamento para MongoDB
 - [ ] Responsividade para celular
 - [ ] Testes automatizados e deploy
 
 ---
 
+## 👥 Equipe
+
+Projeto acadêmico da disciplina de Arquitetura de Software. _(Preencha aqui os integrantes do grupo.)_
+
+---
+
 ## 📄 Licença
 
-Uso acadêmico (MIT).
+Uso acadêmico — MIT.
