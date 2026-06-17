@@ -13,6 +13,7 @@ function exigirUsuario(req, res, next) {
   next();
 }
 app.use('/api/listas', exigirUsuario, require('./routes/listaRoutes'));
+app.use('/api/etiquetas', exigirUsuario, require('./routes/etiquetaRoutes'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 module.exports = app;

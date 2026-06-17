@@ -21,6 +21,7 @@ const ic = (n, s = 18) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" f
 let dados = [];
 let listaAtivaId = null, tarefaAtivaId = null, expandidaId = null;
 let ocultarConcluidas = false, termoBusca = '', filtroEtiqueta = '';
+let etiquetas = [], coresEtiq = {};
 let focarAddDe = null;
 
 // ===== API =====
@@ -46,6 +47,9 @@ const api = {
   cadastro: (d) => fetch('/api/auth/cadastro', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(d) }),
   compartilhar: (lid, email) => fetch(`/api/listas/${lid}/compartilhar`, { method:'POST', headers:hdr(1), body:JSON.stringify({ email }) }),
   removerColaborador: (lid, uid) => fetch(`/api/listas/${lid}/compartilhar/${uid}`, { method:'DELETE', headers:hdr() }),
+  listarEtiquetas: () => fetch('/api/etiquetas', { headers: hdr() }).then(j),
+  atualizarEtiqueta: (id, d) => fetch(`/api/etiquetas/${id}`, { method:'PUT', headers:hdr(1), body:JSON.stringify(d) }).then(j),
+  excluirEtiqueta: (id) => fetch(`/api/etiquetas/${id}`, { method:'DELETE', headers:hdr() }),
 };
 
 // ===== Util =====
@@ -56,6 +60,12 @@ const getLista = (id) => dados.find(l => l.id === id);
 const listaDaTarefa = (tid) => dados.find(l => l.tarefas.some(t => t.id === tid));
 const getTarefa = (tid) => { const l = listaDaTarefa(tid); return l && l.tarefas.find(t => t.id === tid); };
 const hojeISO = () => new Date().toISOString().slice(0, 10);
+const corDe = (nome) => coresEtiq[(nome || '').toLowerCase()] || '#8b93a7';
+async function carregarEtiquetas() {
+  etiquetas = await api.listarEtiquetas();
+  coresEtiq = {};
+  etiquetas.forEach(e => { coresEtiq[e.nome.toLowerCase()] = e.cor; });
+}
 
 function toast(msg, tipo = '') {
   const el = document.createElement('div');
@@ -84,6 +94,7 @@ $('btn-tema').onclick = () => aplicarTema(document.documentElement.getAttribute(
 // ===== Carregar =====
 async function carregar() {
   dados = await api.listar();
+  await carregarEtiquetas();
   if (!listaAtivaId && dados.length) listaAtivaId = dados[0].id;
   if (listaAtivaId && !getLista(listaAtivaId)) listaAtivaId = dados.length ? dados[0].id : null;
   if (tarefaAtivaId && !getTarefa(tarefaAtivaId)) fecharDetalhe();
@@ -186,7 +197,7 @@ function itemTarefa(t, comOrigem, listaOrigem, arrastavel) {
   const feitos = (t.checklist || []).filter(i => i.concluido).length;
   const pino = t.fixada ? `<span class="pin-badge">${ic('pin', 13)}</span>` : '';
   const origem = comOrigem && listaOrigem ? `<span class="lista-origem">em ${esc(listaOrigem.titulo)}</span>` : '';
-  const etq = t.etiqueta ? `<span class="etiqueta">${esc(t.etiqueta)}</span>` : '';
+  const _c = corDe(t.etiqueta); const etq = t.etiqueta ? `<span class="etiqueta" style="background:${_c}22;color:${_c}">${esc(t.etiqueta)}</span>` : '';
   const pz = formatarPrazo(t.prazo, t.status);
   const prazoHtml = pz ? `<span class="prazo ${pz.classe}">${ic('calendar', 12)} ${esc(pz.texto)}</span>` : '';
   const checagem = total ? `<span class="mi">${ic('listcheck', 13)} ${feitos}/${total}</span>` : '';
@@ -354,6 +365,7 @@ $('form-tarefa').onsubmit = async (e) => {
   const t = await api.criarTarefa(listaAtivaId, { descricao, etiqueta: $('nova-tarefa-etiqueta').value });
   getLista(listaAtivaId).tarefas.push(t);
   $('nova-tarefa').value = ''; $('nova-tarefa-etiqueta').value = '';
+  await carregarEtiquetas();
   renderTarefas(); renderListas();
 };
 $('busca').oninput = (e) => { termoBusca = e.target.value.trim(); expandidaId = null; renderListas(); renderTarefas(); };
@@ -390,6 +402,7 @@ $('btn-salvar').onclick = async () => {
     anotacao: $('det-anotacao').innerHTML,
   };
   const at = await api.salvarTarefa(lid, t.id, body); Object.assign(t, at);
+  await carregarEtiquetas();
   renderTarefas(); renderListas(); toast('Alterações salvas', 'sucesso');
 };
 $('btn-excluir-tarefa').onclick = async () => {
@@ -477,6 +490,27 @@ $('form-share').onsubmit = async (e) => {
   const l = getLista(shareListaId); l.membros = j2.membros; l.colaboradores = j2.colaboradores;
   $('share-email').value = ''; renderMembros(); renderListas(); toast('Lista compartilhada', 'sucesso');
 };
+
+// ===== Gerenciador de etiquetas =====
+function abrirEtiquetas() { renderEtiqManager(); $('modal-etiquetas').hidden = false; }
+function fecharEtiquetas() { $('modal-etiquetas').hidden = true; }
+function renderEtiqManager() {
+  const c = $('etiq-lista'); c.innerHTML = '';
+  $('etiq-vazio').hidden = etiquetas.length > 0;
+  etiquetas.slice().sort((a, b) => a.nome.localeCompare(b.nome)).forEach(e => {
+    const row = document.createElement('div'); row.className = 'etiq-row';
+    row.innerHTML = `<input type="color" value="${e.cor}" title="Cor" /><input type="text" value="${esc(e.nome)}" maxlength="20" /><button class="btn-icone" title="Excluir">${ic('trash', 15)}</button>`;
+    const [cor, nome, del] = [row.querySelector('input[type=color]'), row.querySelector('input[type=text]'), row.querySelector('button')];
+    cor.onchange = async () => { await api.atualizarEtiqueta(e.id, { cor: cor.value }); await carregarEtiquetas(); renderEtiqManager(); renderTarefas(); };
+    nome.onchange = async () => { if (!nome.value.trim()) { nome.value = e.nome; return; } await api.atualizarEtiqueta(e.id, { nome: nome.value.trim() }); await carregarEtiquetas(); renderEtiqManager(); renderTarefas(); renderListas(); };
+    del.onclick = async () => { if (!confirm(`Excluir a etiqueta "${e.nome}"? Ela será removida das tarefas.`)) return; await api.excluirEtiqueta(e.id); await carregarEtiquetas(); renderEtiqManager(); renderTarefas(); };
+    c.appendChild(row);
+  });
+}
+$('btn-etiquetas').onclick = abrirEtiquetas;
+$('etiq-fechar').onclick = fecharEtiquetas;
+$('modal-etiquetas').addEventListener('click', (e) => { if (e.target.id === 'modal-etiquetas') fecharEtiquetas(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('modal-etiquetas').hidden) fecharEtiquetas(); });
 
 // ===== Ícones estáticos =====
 function iconesEstaticos() {

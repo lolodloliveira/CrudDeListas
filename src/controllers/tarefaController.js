@@ -1,4 +1,5 @@
 const store = require('../store');
+const etiq = require('./etiquetaController');
 const acessivel = (l, uid) => l.usuarioId === uid || (l.colaboradores || []).includes(uid);
 function ctx(req, res) {
   const db = store.read();
@@ -17,13 +18,13 @@ exports.criar = (req, res) => {
   const { descricao, etiqueta, prazo } = req.body;
   if (!descricao || !descricao.trim()) return res.status(400).json({ erro: 'A descrição da tarefa é obrigatória.' });
   const tarefa = { id: store.novoId('t'), descricao: descricao.trim(), etiqueta: (etiqueta||'').trim(), status: 'pendente', prazo: prazo || null, fixada: false, anotacao: '', checklist: [], criadaEm: new Date().toISOString() };
-  c.lista.tarefas.push(tarefa); store.write(c.db); res.status(201).json(tarefa);
+  c.lista.tarefas.push(tarefa); etiq.ensure(c.db, req.userId, tarefa.etiqueta); store.write(c.db); res.status(201).json(tarefa);
 };
 exports.atualizar = (req, res) => {
   const c = ctx(req, res); if (!c) return;
   const { descricao, etiqueta, status, anotacao, prazo, fixada } = req.body;
   if (descricao !== undefined) c.tarefa.descricao = descricao.trim();
-  if (etiqueta !== undefined) c.tarefa.etiqueta = etiqueta.trim();
+  if (etiqueta !== undefined) { c.tarefa.etiqueta = etiqueta.trim(); etiq.ensure(c.db, req.userId, c.tarefa.etiqueta); }
   if (status !== undefined) c.tarefa.status = status;
   if (anotacao !== undefined) c.tarefa.anotacao = anotacao;
   if (prazo !== undefined) c.tarefa.prazo = prazo || null;

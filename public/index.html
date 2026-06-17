@@ -73,6 +73,7 @@
           <select id="filtro-etiqueta"><option value="">Todas</option></select>
         </label>
         <label class="toggle"><input type="checkbox" id="ocultar-concluidas" /><span>Ocultar concluídas</span></label>
+        <button id="btn-etiquetas" class="link-btn" type="button">Gerenciar etiquetas</button>
       </div>
 
       <div id="progresso" class="progresso" hidden>
@@ -130,6 +131,16 @@
         <button id="modal-cancelar" class="btn-sec">Cancelar</button>
         <button id="modal-criar" class="btn-pri">Criar lista</button>
       </div>
+    </div>
+  </div>
+
+  <div id="modal-etiquetas" class="modal-overlay" hidden>
+    <div class="modal-card">
+      <h3>Etiquetas</h3>
+      <p class="share-sub">Personalize a cor ou o nome. Excluir remove a etiqueta das tarefas.</p>
+      <div id="etiq-lista" class="etiq-lista"></div>
+      <p id="etiq-vazio" class="share-sub" hidden>Nenhuma etiqueta ainda — elas aparecem quando você usa uma etiqueta numa tarefa.</p>
+      <div class="modal-acoes"><button id="etiq-fechar" class="btn-sec">Fechar</button></div>
     </div>
   </div>
 

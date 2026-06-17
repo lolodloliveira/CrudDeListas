@@ -11,6 +11,11 @@ const SEED = {
   usuarios: [
     { id:'u1', nome:'Estudante Demo', email:'demo@demo.com', senha: hash('demo123'), criadoEm: agora() }
   ],
+  etiquetas: [
+    { id:'e1', usuarioId:'u1', nome:'Urgente', cor:'#E2574C' },
+    { id:'e2', usuarioId:'u1', nome:'Estudo', cor:'#4F86C6' },
+    { id:'e3', usuarioId:'u1', nome:'Casa', cor:'#6FB07F' }
+  ],
   listas: [
     { id:'l1', usuarioId:'u1', colaboradores:[], titulo:'Faculdade', cor_hex:'#4F86C6', criadaEm:agora(), tarefas:[
       { id:'t1', descricao:'Entregar protótipo de Arquitetura', etiqueta:'Urgente', status:'pendente', prazo:dia(-2), fixada:true,
@@ -26,7 +31,7 @@ const SEED = {
         { id:'c5', texto:'Café', concluido:false } ], criadaEm:agora() } ] } ]
 };
 function ensureFile(){ if(!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR,{recursive:true}); if(!fs.existsSync(DB_FILE)) fs.writeFileSync(DB_FILE,JSON.stringify(SEED,null,2)); }
-function read(){ ensureFile(); const db = JSON.parse(fs.readFileSync(DB_FILE,'utf-8')); if(!db.usuarios) db.usuarios=[]; if(!db.listas) db.listas=[]; return db; }
+function read(){ ensureFile(); const db = JSON.parse(fs.readFileSync(DB_FILE,'utf-8')); if(!db.usuarios) db.usuarios=[]; if(!db.listas) db.listas=[]; if(!db.etiquetas) db.etiquetas=[]; return db; }
 function write(db){ ensureFile(); fs.writeFileSync(DB_FILE,JSON.stringify(db,null,2)); }
 function novoId(p){ return p + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 module.exports = { read, write, novoId, hash };

@@ -274,3 +274,12 @@ svg { flex-shrink:0; }
   .ferramentas { gap: 10px; }
   .titulo-lista h2 { font-size: 19px; }
 }
+
+/* ===== Gerenciador de etiquetas ===== */
+.link-btn { background:none; border:none; color:var(--accent); cursor:pointer; font-size:13px; padding:0; }
+.link-btn:hover { text-decoration:underline; }
+.etiq-lista { display:flex; flex-direction:column; gap:8px; margin:10px 0 4px; max-height:300px; overflow-y:auto; }
+.etiq-row { display:flex; align-items:center; gap:10px; }
+.etiq-row input[type=color] { width:32px; height:32px; border:1px solid var(--border); border-radius:4px; padding:2px; cursor:pointer; background:var(--surface-2); flex-shrink:0; }
+.etiq-row input[type=text] { flex:1; padding:8px 10px; border:1px solid var(--border); border-radius:4px; background:var(--surface-2); color:var(--text); font-size:14px; outline:none; }
+.etiq-row input[type=text]:focus { border-color:var(--accent); }
