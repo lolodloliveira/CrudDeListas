@@ -180,7 +180,7 @@ Depois abra **http://localhost:3000** no navegador.
 
 ## 👥 Equipe
 
-Projeto acadêmico da disciplina de Arquitetura de Software. _(Preencha aqui os integrantes do grupo.)_
+Projeto acadêmico da disciplina de Engenharia de Software: Projeto e Desenvolvimento. Integrantes: Augusto Feltrin, Matheus Tresguerras, Lorenzo de Oliveira e Lucas Mendes
 
 ---
 
