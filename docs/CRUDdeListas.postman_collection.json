@@ -1,0 +1,51 @@
+{
+  "info": {
+    "name": "CRUD de Listas - API",
+    "description": "Coleção para testar as rotas da API. Antes de tudo, rode 'Cadastro' ou 'Login' e copie o 'id' retornado para a variável de coleção {{userId}}. Depois copie o id de uma lista para {{listaId}} e de uma tarefa para {{tarefaId}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base", "value": "http://localhost:3000" },
+    { "key": "userId", "value": "" },
+    { "key": "listaId", "value": "" },
+    { "key": "tarefaId", "value": "" },
+    { "key": "itemId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        { "name": "Cadastro", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{base}}/api/auth/cadastro", "body": { "mode": "raw", "raw": "{\n  \"nome\": \"Estudante\",\n  \"email\": \"estudante@teste.com\",\n  \"senha\": \"1234\"\n}" } } },
+        { "name": "Login", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{base}}/api/auth/login", "body": { "mode": "raw", "raw": "{\n  \"email\": \"estudante@teste.com\",\n  \"senha\": \"1234\"\n}" } } }
+      ]
+    },
+    {
+      "name": "Listas",
+      "item": [
+        { "name": "Listar", "request": { "method": "GET", "header": [{ "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas" } },
+        { "name": "Criar lista", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas", "body": { "mode": "raw", "raw": "{\n  \"titulo\": \"Faculdade\",\n  \"cor_hex\": \"#4F86C6\"\n}" } } },
+        { "name": "Editar lista", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas/{{listaId}}", "body": { "mode": "raw", "raw": "{\n  \"titulo\": \"Faculdade 2025\"\n}" } } },
+        { "name": "Excluir lista", "request": { "method": "DELETE", "header": [{ "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas/{{listaId}}" } },
+        { "name": "Compartilhar lista", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas/{{listaId}}/compartilhar", "body": { "mode": "raw", "raw": "{\n  \"email\": \"colega@teste.com\"\n}" } } }
+      ]
+    },
+    {
+      "name": "Tarefas",
+      "item": [
+        { "name": "Criar tarefa", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas/{{listaId}}/tarefas", "body": { "mode": "raw", "raw": "{\n  \"descricao\": \"Estudar para a prova\",\n  \"etiqueta\": \"Estudo\",\n  \"prazo\": \"2026-07-01\"\n}" } } },
+        { "name": "Editar tarefa", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas/{{listaId}}/tarefas/{{tarefaId}}", "body": { "mode": "raw", "raw": "{\n  \"anotacao\": \"<p>Revisar capítulos 1 a 3</p>\"\n}" } } },
+        { "name": "Concluir/Reabrir", "request": { "method": "PATCH", "header": [{ "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas/{{listaId}}/tarefas/{{tarefaId}}/status" } },
+        { "name": "Fixar/Desafixar", "request": { "method": "PATCH", "header": [{ "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas/{{listaId}}/tarefas/{{tarefaId}}/fixar" } },
+        { "name": "Excluir tarefa", "request": { "method": "DELETE", "header": [{ "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas/{{listaId}}/tarefas/{{tarefaId}}" } }
+      ]
+    },
+    {
+      "name": "Checklist",
+      "item": [
+        { "name": "Adicionar item", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas/{{listaId}}/tarefas/{{tarefaId}}/checklist", "body": { "mode": "raw", "raw": "{\n  \"texto\": \"Capítulo 1\"\n}" } } },
+        { "name": "Marcar/Desmarcar item", "request": { "method": "PATCH", "header": [{ "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas/{{listaId}}/tarefas/{{tarefaId}}/checklist/{{itemId}}" } },
+        { "name": "Remover item", "request": { "method": "DELETE", "header": [{ "key": "X-Usuario-Id", "value": "{{userId}}" }], "url": "{{base}}/api/listas/{{listaId}}/tarefas/{{tarefaId}}/checklist/{{itemId}}" } }
+      ]
+    }
+  ]
+}

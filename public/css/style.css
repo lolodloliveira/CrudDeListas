@@ -255,3 +255,22 @@ svg { flex-shrink:0; }
 .membro .av { width:28px; height:28px; border-radius:50%; background:var(--surface-2); color:var(--muted); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px; flex-shrink:0; }
 .membro .nm { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .membro .papel { font-size:11px; color:var(--muted); }
+
+/* ===== Responsividade (telas pequenas) ===== */
+@media (max-width: 820px) {
+  body { overflow: auto; height: auto; }
+  .app, .app.com-detalhe { grid-template-columns: 1fr; height: auto; min-height: 100vh; }
+  .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+  .listas { max-height: 32vh; }
+  .conteudo { padding: 20px 16px; }
+  /* o painel de detalhe vira tela cheia por cima */
+  .detalhe { position: fixed; inset: 0; z-index: 40; border-left: none; }
+  .login-card { padding: 26px 20px; }
+}
+@media (max-width: 480px) {
+  .cabecalho { flex-wrap: wrap; }
+  .form-tarefa { flex-wrap: wrap; }
+  #nova-tarefa-etiqueta { width: 100%; }
+  .ferramentas { gap: 10px; }
+  .titulo-lista h2 { font-size: 19px; }
+}
